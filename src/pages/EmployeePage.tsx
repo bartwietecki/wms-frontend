@@ -103,7 +103,7 @@ export default function EmployeePage() {
           <div style={fieldStyle}>
             <label style={labelStyle}>Date</label>
             <input
-              style={inputStyle}
+              className="form-input"
               type="date"
               value={workDate}
               onChange={(e) => { setWorkDate(e.target.value); setSubmitSuccess(false); }}
@@ -117,7 +117,7 @@ export default function EmployeePage() {
               {hoursHint && <span style={hintStyle}> — {hoursHint}</span>}
             </label>
             <input
-              style={inputStyle}
+              className="form-input"
               type="number"
               min="1"
               step="1"
@@ -131,7 +131,8 @@ export default function EmployeePage() {
           <div style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
             <label style={labelStyle}>Description <span style={optionalStyle}>(optional)</span></label>
             <textarea
-              style={{ ...inputStyle, resize: "vertical", minHeight: 80 }}
+              className="form-input"
+              style={{ resize: "vertical", minHeight: 80 }}
               value={description}
               onChange={(e) => { setDescription(e.target.value); setSubmitSuccess(false); }}
               rows={3}
@@ -140,7 +141,7 @@ export default function EmployeePage() {
           </div>
 
           <div style={{ gridColumn: "1 / -1" }}>
-            <button style={primaryBtnStyle} type="submit" disabled={submitting}>
+            <button className="btn-primary" type="submit" disabled={submitting}>
               {submitting ? "Saving…" : "Submit Work Log"}
             </button>
           </div>
@@ -158,7 +159,7 @@ export default function EmployeePage() {
             <div style={fieldStyle}>
               <label style={labelStyle}>From</label>
               <input
-                style={inputStyle}
+                className="form-input"
                 type="date"
                 value={from}
                 onChange={(e) => setFrom(e.target.value)}
@@ -168,14 +169,14 @@ export default function EmployeePage() {
             <div style={fieldStyle}>
               <label style={labelStyle}>To</label>
               <input
-                style={inputStyle}
+                className="form-input"
                 type="date"
                 value={to}
                 onChange={(e) => setTo(e.target.value)}
                 required
               />
             </div>
-            <button style={secondaryBtnStyle} type="submit" disabled={loading}>
+            <button className="btn-secondary" type="submit" disabled={loading}>
               {loading ? "Loading…" : "Apply"}
             </button>
           </form>
@@ -200,7 +201,7 @@ export default function EmployeePage() {
               </thead>
               <tbody>
                 {entries.map((entry) => (
-                  <tr key={entry.id} style={tbodyRowStyle}>
+                  <tr key={entry.id} className="table-row-hover">
                     <td style={tdStyle}>{entry.workDate}</td>
                     <td style={tdStyle}>
                       <span style={durationStyle}>{entry.minutes} min</span>
@@ -223,7 +224,7 @@ export default function EmployeePage() {
   );
 }
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
+// Styles
 
 const errorBannerStyle: CSSProperties = {
   background: "var(--color-danger-bg)",
@@ -309,39 +310,11 @@ const fieldHelpStyle: CSSProperties = {
   color: "var(--color-text-subtle)",
 };
 
-const inputStyle: CSSProperties = {
-  padding: "8px 10px",
-  border: "1px solid var(--color-border-strong)",
-  borderRadius: "var(--radius-sm)",
-  fontSize: "var(--font-size-base)",
-  color: "var(--color-text)",
-  background: "var(--color-surface)",
-  outline: "none",
-  width: "100%",
-};
+const inputStyle_unused = {}; // replaced by .form-input CSS class
 
-const primaryBtnStyle: CSSProperties = {
-  padding: "9px 20px",
-  background: "var(--color-primary)",
-  color: "#fff",
-  border: "none",
-  borderRadius: "var(--radius-sm)",
-  fontWeight: 600,
-  fontSize: "var(--font-size-sm)",
-  cursor: "pointer",
-};
+const primaryBtnStyle_unused = {}; // replaced by .btn-primary CSS class
 
-const secondaryBtnStyle: CSSProperties = {
-  padding: "8px 16px",
-  background: "var(--color-surface)",
-  color: "var(--color-primary)",
-  border: "1px solid var(--color-primary-border)",
-  borderRadius: "var(--radius-sm)",
-  fontWeight: 600,
-  fontSize: "var(--font-size-sm)",
-  cursor: "pointer",
-  whiteSpace: "nowrap",
-};
+const secondaryBtnStyle_unused = {}; // replaced by .btn-secondary CSS class
 
 const mutedTextStyle: CSSProperties = {
   color: "var(--color-text-muted)",
@@ -361,8 +334,6 @@ const tableStyle: CSSProperties = {
 const theadRowStyle: CSSProperties = {
   background: "var(--color-bg)",
 };
-
-const tbodyRowStyle: CSSProperties = {};
 
 const thStyle: CSSProperties = {
   textAlign: "left",

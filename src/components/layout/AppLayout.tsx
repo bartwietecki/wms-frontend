@@ -25,7 +25,7 @@ export default function AppLayout() {
   return (
     <div style={shellStyle}>
       {/* Top navbar */}
-      <header style={navbarStyle}>
+      <header style={navbarStyle} className="navbar">
         <div style={navbarInnerStyle}>
           <div style={brandStyle}>
             <span style={brandMarkStyle}>▦</span>
@@ -39,10 +39,7 @@ export default function AppLayout() {
               <NavLink
                 key={area.to}
                 to={area.to}
-                style={({ isActive }) => ({
-                  ...navLinkStyle,
-                  ...(isActive ? { ...navLinkActiveStyle, background: `${area.accent}22`, color: "#fff" } : {}),
-                })}
+                className={({ isActive }) => `nav-link${isActive ? " active" : ""}`}
               >
                 {area.label}
               </NavLink>
@@ -129,19 +126,6 @@ const dividerStyle: CSSProperties = {
 const navStyle: CSSProperties = {
   display: "flex",
   gap: "var(--space-1)",
-};
-
-const navLinkStyle: CSSProperties = {
-  padding: "6px 14px",
-  borderRadius: "var(--radius-sm)",
-  fontSize: "var(--font-size-sm)",
-  fontWeight: 500,
-  color: "rgba(255,255,255,0.75)",
-  transition: "background 0.15s, color 0.15s",
-};
-
-const navLinkActiveStyle: CSSProperties = {
-  color: "#fff",
 };
 
 // Area context bar — thin strip below navbar showing current area

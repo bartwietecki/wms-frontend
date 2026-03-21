@@ -64,7 +64,7 @@ export default function AdminReviewPage() {
         title="Work Entry Review"
         subtitle="Approve or reject employee work log submissions."
         action={
-          <button style={refreshBtnStyle} onClick={loadEntries} disabled={loading}>
+          <button className="btn-secondary-admin" onClick={loadEntries} disabled={loading}>
             {loading ? "Refreshing…" : "↻ Refresh"}
           </button>
         }
@@ -169,7 +169,7 @@ interface PendingRowProps {
 
 function PendingRow({ entry, actioning, onApprove, onReject }: PendingRowProps) {
   return (
-    <tr style={pendingTbodyRowStyle}>
+    <tr className="table-row-hover">
       <td style={tdStyle}>{entry.workDate}</td>
       <td style={tdStyle}>
         <span style={durationStyle}>{entry.minutes} min</span>
@@ -183,10 +183,10 @@ function PendingRow({ entry, actioning, onApprove, onReject }: PendingRowProps) 
       </td>
       <td style={{ ...tdStyle, textAlign: "right" }}>
         <div style={actionRowStyle}>
-          <button style={approveBtnStyle} onClick={onApprove} disabled={actioning}>
+          <button className="btn-approve" onClick={onApprove} disabled={actioning}>
             {actioning ? "…" : "✓ Approve"}
           </button>
-          <button style={rejectBtnStyle} onClick={onReject} disabled={actioning}>
+          <button className="btn-reject" onClick={onReject} disabled={actioning}>
             {actioning ? "…" : "✕ Reject"}
           </button>
         </div>
@@ -197,7 +197,7 @@ function PendingRow({ entry, actioning, onApprove, onReject }: PendingRowProps) 
 
 function ReviewedRow({ entry }: { entry: WorkEntry }) {
   return (
-    <tr>
+    <tr className="table-row-hover">
       <td style={tdStyle}>{entry.workDate}</td>
       <td style={tdStyle}>
         <span style={durationStyle}>{entry.minutes} min</span>
@@ -296,16 +296,7 @@ const cardSubtitleStyle: CSSProperties = {
   marginTop: "var(--space-1)",
 };
 
-const refreshBtnStyle: CSSProperties = {
-  padding: "7px 14px",
-  background: "var(--color-surface)",
-  color: "var(--color-admin-accent)",
-  border: "1px solid var(--color-admin-border)",
-  borderRadius: "var(--radius-sm)",
-  fontWeight: 600,
-  fontSize: "var(--font-size-sm)",
-  cursor: "pointer",
-};
+const refreshBtnStyle_unused = {}; // replaced by .btn-secondary-admin CSS class
 
 const mutedTextStyle: CSSProperties = {
   color: "var(--color-text-muted)",
@@ -338,7 +329,7 @@ const thStyle: CSSProperties = {
   whiteSpace: "nowrap",
 };
 
-const pendingTbodyRowStyle: CSSProperties = {};
+const pendingTbodyRowStyle_unused = {}; // replaced by .table-row-hover CSS class
 
 const tdStyle: CSSProperties = {
   padding: "var(--space-3) var(--space-4)",

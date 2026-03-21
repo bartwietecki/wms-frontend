@@ -31,6 +31,7 @@ export default function AdminReviewPage() {
   async function handleApprove(id: number) {
     try {
       setActioningId(id);
+      setError(null);
       await approveWorkEntry(id);
       await loadEntries();
     } catch (err) {
@@ -43,6 +44,7 @@ export default function AdminReviewPage() {
   async function handleReject(id: number) {
     try {
       setActioningId(id);
+      setError(null);
       await rejectWorkEntry(id);
       await loadEntries();
     } catch (err) {
@@ -58,80 +60,87 @@ export default function AdminReviewPage() {
   return (
     <div>
       <PageHeader
-        title="Admin Panel"
-        subtitle="Review and approve employee work log submissions."
+        area="admin"
+        title="Work Entry Review"
+        subtitle="Approve or reject employee work log submissions."
+        action={
+          <button style={refreshBtnStyle} onClick={loadEntries} disabled={loading}>
+            {loading ? "Refreshing…" : "↻ Refresh"}
+          </button>
+        }
       />
 
       {error && <div style={errorBannerStyle}>{error}</div>}
 
-      {/* Pending */}
-      <Card style={{ marginBottom: "var(--space-8)" }}>
-        <div style={cardHeaderRowStyle}>
-          <h2 style={cardTitleStyle}>
-            Pending Review
+      {/* Pending — visually prominent */}
+      <div style={pendingCardStyle}>
+        <div style={pendingCardHeaderStyle}>
+          <div style={pendingTitleRowStyle}>
+            <span style={pendingDotStyle} />
+            <h2 style={pendingTitleStyle}>Awaiting Review</h2>
             {pending.length > 0 && (
               <span style={countBadgeStyle}>{pending.length}</span>
             )}
-          </h2>
-          <button style={secondaryBtnStyle} onClick={loadEntries} disabled={loading}>
-            {loading ? "Refreshing…" : "Refresh"}
-          </button>
+          </div>
+          <p style={pendingSubtitleStyle}>
+            {pending.length === 0
+              ? "All submissions have been reviewed."
+              : `${pending.length} submission${pending.length > 1 ? "s" : ""} need your attention.`}
+          </p>
         </div>
 
         {loading && <p style={mutedTextStyle}>Loading entries…</p>}
 
         {!loading && pending.length === 0 && (
-          <EmptyState message="No entries pending review." />
+          <EmptyState message="No entries pending review. You're all caught up." />
         )}
 
         {!loading && pending.length > 0 && (
           <div style={tableWrapStyle}>
             <table style={tableStyle}>
               <thead>
-                <tr>
+                <tr style={theadRowStyle}>
                   <th style={thStyle}>Date</th>
-                  <th style={thStyle}>Minutes</th>
+                  <th style={thStyle}>Duration</th>
                   <th style={thStyle}>Description</th>
                   <th style={thStyle}>Status</th>
-                  <th style={thStyle}>Actions</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {pending.map((entry) => (
-                  <EntryRow
+                  <PendingRow
                     key={entry.id}
                     entry={entry}
                     actioning={actioningId === entry.id}
                     onApprove={() => handleApprove(entry.id)}
                     onReject={() => handleReject(entry.id)}
-                    showActions
                   />
                 ))}
               </tbody>
             </table>
           </div>
         )}
-      </Card>
+      </div>
 
-      {/* Reviewed */}
+      {/* Reviewed entries */}
       {reviewed.length > 0 && (
         <Card>
-          <h2 style={{ ...cardTitleStyle, marginBottom: "var(--space-5)" }}>
-            Reviewed Entries
-          </h2>
-          <div style={tableWrapStyle}>
+          <h2 style={cardTitleStyle}>Reviewed Entries</h2>
+          <p style={cardSubtitleStyle}>Previously approved or rejected submissions.</p>
+          <div style={{ ...tableWrapStyle, marginTop: "var(--space-4)" }}>
             <table style={tableStyle}>
               <thead>
-                <tr>
+                <tr style={theadRowStyle}>
                   <th style={thStyle}>Date</th>
-                  <th style={thStyle}>Minutes</th>
+                  <th style={thStyle}>Duration</th>
                   <th style={thStyle}>Description</th>
                   <th style={thStyle}>Status</th>
                 </tr>
               </thead>
               <tbody>
                 {reviewed.map((entry) => (
-                  <EntryRow key={entry.id} entry={entry} actioning={false} />
+                  <ReviewedRow key={entry.id} entry={entry} />
                 ))}
               </tbody>
             </table>
@@ -142,47 +151,64 @@ export default function AdminReviewPage() {
   );
 }
 
-// EntryRow
+// Row components
 
-interface EntryRowProps {
-  entry: WorkEntry;
-  actioning: boolean;
-  onApprove?: () => void;
-  onReject?: () => void;
-  showActions?: boolean;
+function formatHours(minutes: number): string {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (m === 0) return `${h}h`;
+  return `${h}h ${m}m`;
 }
 
-function EntryRow({ entry, actioning, onApprove, onReject, showActions }: EntryRowProps) {
+interface PendingRowProps {
+  entry: WorkEntry;
+  actioning: boolean;
+  onApprove: () => void;
+  onReject: () => void;
+}
+
+function PendingRow({ entry, actioning, onApprove, onReject }: PendingRowProps) {
   return (
-    <tr>
+    <tr style={pendingTbodyRowStyle}>
       <td style={tdStyle}>{entry.workDate}</td>
-      <td style={tdStyle}>{entry.minutes}</td>
-      <td style={{ ...tdStyle, color: "var(--color-text-muted)" }}>
+      <td style={tdStyle}>
+        <span style={durationStyle}>{entry.minutes} min</span>
+        <span style={durationHintStyle}>{formatHours(entry.minutes)}</span>
+      </td>
+      <td style={{ ...tdStyle, color: "var(--color-text-muted)", maxWidth: 300 }}>
         {entry.description?.trim() || <span style={{ color: "var(--color-text-subtle)" }}>—</span>}
       </td>
       <td style={tdStyle}>
         <StatusBadge status={entry.status} />
       </td>
-      {showActions && (
-        <td style={tdStyle}>
-          <div style={actionRowStyle}>
-            <button
-              style={approveBtnStyle}
-              onClick={onApprove}
-              disabled={actioning}
-            >
-              {actioning ? "…" : "Approve"}
-            </button>
-            <button
-              style={rejectBtnStyle}
-              onClick={onReject}
-              disabled={actioning}
-            >
-              {actioning ? "…" : "Reject"}
-            </button>
-          </div>
-        </td>
-      )}
+      <td style={{ ...tdStyle, textAlign: "right" }}>
+        <div style={actionRowStyle}>
+          <button style={approveBtnStyle} onClick={onApprove} disabled={actioning}>
+            {actioning ? "…" : "✓ Approve"}
+          </button>
+          <button style={rejectBtnStyle} onClick={onReject} disabled={actioning}>
+            {actioning ? "…" : "✕ Reject"}
+          </button>
+        </div>
+      </td>
+    </tr>
+  );
+}
+
+function ReviewedRow({ entry }: { entry: WorkEntry }) {
+  return (
+    <tr>
+      <td style={tdStyle}>{entry.workDate}</td>
+      <td style={tdStyle}>
+        <span style={durationStyle}>{entry.minutes} min</span>
+        <span style={durationHintStyle}>{formatHours(entry.minutes)}</span>
+      </td>
+      <td style={{ ...tdStyle, color: "var(--color-text-muted)", maxWidth: 300 }}>
+        {entry.description?.trim() || <span style={{ color: "var(--color-text-subtle)" }}>—</span>}
+      </td>
+      <td style={tdStyle}>
+        <StatusBadge status={entry.status} />
+      </td>
     </tr>
   );
 }
@@ -200,20 +226,47 @@ const errorBannerStyle: CSSProperties = {
   fontWeight: 500,
 };
 
-const cardTitleStyle: CSSProperties = {
-  fontSize: "var(--font-size-md)",
-  fontWeight: 600,
-  color: "var(--color-text)",
+// Pending card — distinct from regular Card, uses warning tint
+const pendingCardStyle: CSSProperties = {
+  background: "var(--color-surface)",
+  border: "1px solid var(--color-warning-border)",
+  borderRadius: "var(--radius-md)",
+  boxShadow: "var(--shadow-sm)",
+  marginBottom: "var(--space-8)",
+  overflow: "hidden",
+};
+
+const pendingCardHeaderStyle: CSSProperties = {
+  padding: "var(--space-5) var(--space-6)",
+  borderBottom: "1px solid var(--color-warning-border)",
+  background: "var(--color-warning-bg)",
+};
+
+const pendingTitleRowStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
   gap: "var(--space-2)",
+  marginBottom: "var(--space-1)",
 };
 
-const cardHeaderRowStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  marginBottom: "var(--space-5)",
+const pendingDotStyle: CSSProperties = {
+  width: 8,
+  height: 8,
+  borderRadius: "50%",
+  background: "var(--color-warning-text)",
+  flexShrink: 0,
+};
+
+const pendingTitleStyle: CSSProperties = {
+  fontSize: "var(--font-size-md)",
+  fontWeight: 600,
+  color: "var(--color-warning-text)",
+};
+
+const pendingSubtitleStyle: CSSProperties = {
+  fontSize: "var(--font-size-sm)",
+  color: "var(--color-warning-text)",
+  opacity: 0.8,
 };
 
 const countBadgeStyle: CSSProperties = {
@@ -223,18 +276,31 @@ const countBadgeStyle: CSSProperties = {
   minWidth: 22,
   height: 22,
   padding: "0 7px",
-  background: "var(--color-primary)",
+  background: "var(--color-warning-text)",
   color: "#fff",
   borderRadius: 999,
   fontSize: "var(--font-size-xs)",
   fontWeight: 700,
 };
 
-const secondaryBtnStyle: CSSProperties = {
+const cardTitleStyle: CSSProperties = {
+  fontSize: "var(--font-size-md)",
+  fontWeight: 600,
+  color: "var(--color-text)",
+  marginBottom: 0,
+};
+
+const cardSubtitleStyle: CSSProperties = {
+  fontSize: "var(--font-size-sm)",
+  color: "var(--color-text-muted)",
+  marginTop: "var(--space-1)",
+};
+
+const refreshBtnStyle: CSSProperties = {
   padding: "7px 14px",
   background: "var(--color-surface)",
-  color: "var(--color-primary)",
-  border: "1px solid var(--color-primary-border)",
+  color: "var(--color-admin-accent)",
+  border: "1px solid var(--color-admin-border)",
   borderRadius: "var(--radius-sm)",
   fontWeight: 600,
   fontSize: "var(--font-size-sm)",
@@ -244,7 +310,7 @@ const secondaryBtnStyle: CSSProperties = {
 const mutedTextStyle: CSSProperties = {
   color: "var(--color-text-muted)",
   fontSize: "var(--font-size-sm)",
-  padding: "var(--space-4) 0",
+  padding: "var(--space-5) var(--space-6)",
 };
 
 const tableWrapStyle: CSSProperties = {
@@ -254,6 +320,10 @@ const tableWrapStyle: CSSProperties = {
 const tableStyle: CSSProperties = {
   width: "100%",
   borderCollapse: "collapse",
+};
+
+const theadRowStyle: CSSProperties = {
+  background: "var(--color-bg)",
 };
 
 const thStyle: CSSProperties = {
@@ -268,6 +338,8 @@ const thStyle: CSSProperties = {
   whiteSpace: "nowrap",
 };
 
+const pendingTbodyRowStyle: CSSProperties = {};
+
 const tdStyle: CSSProperties = {
   padding: "var(--space-3) var(--space-4)",
   fontSize: "var(--font-size-base)",
@@ -275,13 +347,27 @@ const tdStyle: CSSProperties = {
   verticalAlign: "middle",
 };
 
+const durationStyle: CSSProperties = {
+  display: "block",
+  fontWeight: 500,
+  color: "var(--color-text)",
+};
+
+const durationHintStyle: CSSProperties = {
+  display: "block",
+  fontSize: "var(--font-size-xs)",
+  color: "var(--color-text-subtle)",
+  marginTop: 1,
+};
+
 const actionRowStyle: CSSProperties = {
   display: "flex",
   gap: "var(--space-2)",
+  justifyContent: "flex-end",
 };
 
 const approveBtnStyle: CSSProperties = {
-  padding: "5px 12px",
+  padding: "6px 14px",
   background: "var(--color-success-bg)",
   color: "var(--color-success-text)",
   border: "1px solid var(--color-success-border)",
@@ -289,10 +375,11 @@ const approveBtnStyle: CSSProperties = {
   fontWeight: 600,
   fontSize: "var(--font-size-sm)",
   cursor: "pointer",
+  whiteSpace: "nowrap",
 };
 
 const rejectBtnStyle: CSSProperties = {
-  padding: "5px 12px",
+  padding: "6px 14px",
   background: "var(--color-danger-bg)",
   color: "var(--color-danger-text)",
   border: "1px solid var(--color-danger-border)",
@@ -300,4 +387,5 @@ const rejectBtnStyle: CSSProperties = {
   fontWeight: 600,
   fontSize: "var(--font-size-sm)",
   cursor: "pointer",
+  whiteSpace: "nowrap",
 };

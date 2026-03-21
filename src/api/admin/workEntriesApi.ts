@@ -1,4 +1,4 @@
-import { http } from "./http";
+import { http } from "../http";
 import type { WorkEntry } from "./types";
 
 export function getAllWorkEntries() {

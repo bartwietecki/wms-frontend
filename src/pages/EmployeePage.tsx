@@ -1,27 +1,11 @@
 import { useEffect, useState } from "react";
 import type { CSSProperties } from "react";
-import { createWorkEntry, getMyWorkEntries } from "../api/workEntriesApi";
-import type { WorkEntry } from "../api/types";
-import Card from "../components/ui/Card";
+import { createWorkEntry, getMyWorkEntries } from "../api/employee/workEntriesApi";
+import type { WorkEntry } from "../api/employee/types";
+import { getToday, getMonthStart } from "../utils/time";
 import PageHeader from "../components/ui/PageHeader";
-import StatusBadge from "../components/ui/StatusBadge";
-import EmptyState from "../components/ui/EmptyState";
-
-function getToday(): string {
-  return new Date().toISOString().split("T")[0];
-}
-
-function getMonthStart(): string {
-  const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
-}
-
-function formatHours(minutes: number): string {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  if (m === 0) return `${h}h`;
-  return `${h}h ${m}m`;
-}
+import WorkLogForm from "../features/employee/WorkLogForm";
+import WorkLogTable from "../features/employee/WorkLogTable";
 
 export default function EmployeePage() {
   const [entries, setEntries] = useState<WorkEntry[]>([]);
@@ -80,9 +64,6 @@ export default function EmployeePage() {
     await loadEntries();
   }
 
-  const minutesNum = Number(minutes);
-  const hoursHint = minutesNum > 0 ? formatHours(minutesNum) : null;
-
   return (
     <div>
       <PageHeader
@@ -92,139 +73,31 @@ export default function EmployeePage() {
       />
 
       {error && <div style={errorBannerStyle}>{error}</div>}
-      {submitSuccess && (
-        <div style={successBannerStyle}>Work log submitted successfully.</div>
-      )}
+      {submitSuccess && <div style={successBannerStyle}>Work log submitted successfully.</div>}
 
-      {/* Add Work Log */}
-      <Card style={{ maxWidth: 500, marginBottom: "var(--space-8)" }}>
-        <h2 style={cardTitleStyle}>Log Work Hours</h2>
-        <form onSubmit={handleCreateSubmit} style={formGridStyle}>
-          <div style={fieldStyle}>
-            <label style={labelStyle}>Date</label>
-            <input
-              className="form-input"
-              type="date"
-              value={workDate}
-              onChange={(e) => { setWorkDate(e.target.value); setSubmitSuccess(false); }}
-              required
-            />
-          </div>
+      <WorkLogForm
+        workDate={workDate}
+        minutes={minutes}
+        description={description}
+        submitting={submitting}
+        onWorkDateChange={(v) => { setWorkDate(v); setSubmitSuccess(false); }}
+        onMinutesChange={(v) => { setMinutes(v); setSubmitSuccess(false); }}
+        onDescriptionChange={(v) => { setDescription(v); setSubmitSuccess(false); }}
+        onSubmit={handleCreateSubmit}
+      />
 
-          <div style={fieldStyle}>
-            <label style={labelStyle}>
-              Minutes
-              {hoursHint && <span style={hintStyle}> — {hoursHint}</span>}
-            </label>
-            <input
-              className="form-input"
-              type="number"
-              min="1"
-              step="1"
-              value={minutes}
-              onChange={(e) => { setMinutes(e.target.value); setSubmitSuccess(false); }}
-              required
-            />
-            <span style={fieldHelpStyle}>e.g. 480 = 8 hours, 60 = 1 hour</span>
-          </div>
-
-          <div style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
-            <label style={labelStyle}>Description <span style={optionalStyle}>(optional)</span></label>
-            <textarea
-              className="form-input"
-              style={{ resize: "vertical", minHeight: 80 }}
-              value={description}
-              onChange={(e) => { setDescription(e.target.value); setSubmitSuccess(false); }}
-              rows={3}
-              placeholder="What did you work on?"
-            />
-          </div>
-
-          <div style={{ gridColumn: "1 / -1" }}>
-            <button className="btn-primary" type="submit" disabled={submitting}>
-              {submitting ? "Saving…" : "Submit Work Log"}
-            </button>
-          </div>
-        </form>
-      </Card>
-
-      {/* Work Log List */}
-      <Card>
-        <div style={cardHeaderRowStyle}>
-          <div>
-            <h2 style={cardTitleStyle}>Submission History</h2>
-            <p style={cardSubtitleStyle}>Your work logs for the selected period.</p>
-          </div>
-          <form onSubmit={handleFilterSubmit} style={filterRowStyle}>
-            <div style={fieldStyle}>
-              <label style={labelStyle}>From</label>
-              <input
-                className="form-input"
-                type="date"
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
-                required
-              />
-            </div>
-            <div style={fieldStyle}>
-              <label style={labelStyle}>To</label>
-              <input
-                className="form-input"
-                type="date"
-                value={to}
-                onChange={(e) => setTo(e.target.value)}
-                required
-              />
-            </div>
-            <button className="btn-secondary" type="submit" disabled={loading}>
-              {loading ? "Loading…" : "Apply"}
-            </button>
-          </form>
-        </div>
-
-        {loading && <p style={mutedTextStyle}>Loading your work logs…</p>}
-
-        {!loading && entries.length === 0 && (
-          <EmptyState message="No work logs found for the selected period." />
-        )}
-
-        {!loading && entries.length > 0 && (
-          <div style={tableWrapStyle}>
-            <table style={tableStyle}>
-              <thead>
-                <tr style={theadRowStyle}>
-                  <th style={thStyle}>Date</th>
-                  <th style={thStyle}>Duration</th>
-                  <th style={thStyle}>Description</th>
-                  <th style={thStyle}>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {entries.map((entry) => (
-                  <tr key={entry.id} className="table-row-hover">
-                    <td style={tdStyle}>{entry.workDate}</td>
-                    <td style={tdStyle}>
-                      <span style={durationStyle}>{entry.minutes} min</span>
-                      <span style={durationHintStyle}>{formatHours(entry.minutes)}</span>
-                    </td>
-                    <td style={{ ...tdStyle, color: "var(--color-text-muted)", maxWidth: 320 }}>
-                      {entry.description?.trim() || <span style={{ color: "var(--color-text-subtle)" }}>—</span>}
-                    </td>
-                    <td style={tdStyle}>
-                      <StatusBadge status={entry.status} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </Card>
+      <WorkLogTable
+        entries={entries}
+        loading={loading}
+        from={from}
+        to={to}
+        onFromChange={setFrom}
+        onToChange={setTo}
+        onFilterSubmit={handleFilterSubmit}
+      />
     </div>
   );
 }
-
-// Styles
 
 const errorBannerStyle: CSSProperties = {
   background: "var(--color-danger-bg)",
@@ -246,123 +119,4 @@ const successBannerStyle: CSSProperties = {
   marginBottom: "var(--space-5)",
   fontSize: "var(--font-size-sm)",
   fontWeight: 500,
-};
-
-const cardTitleStyle: CSSProperties = {
-  fontSize: "var(--font-size-md)",
-  fontWeight: 600,
-  color: "var(--color-text)",
-  marginBottom: 0,
-};
-
-const cardSubtitleStyle: CSSProperties = {
-  fontSize: "var(--font-size-sm)",
-  color: "var(--color-text-muted)",
-  marginTop: "var(--space-1)",
-};
-
-const cardHeaderRowStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "flex-start",
-  justifyContent: "space-between",
-  flexWrap: "wrap",
-  gap: "var(--space-4)",
-  marginBottom: "var(--space-5)",
-};
-
-const formGridStyle: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "1fr 1fr",
-  gap: "var(--space-4)",
-};
-
-const filterRowStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "flex-end",
-  gap: "var(--space-3)",
-  flexWrap: "wrap",
-};
-
-const fieldStyle: CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "var(--space-1)",
-};
-
-const labelStyle: CSSProperties = {
-  fontSize: "var(--font-size-sm)",
-  fontWeight: 500,
-  color: "var(--color-text-muted)",
-};
-
-const hintStyle: CSSProperties = {
-  fontWeight: 400,
-  color: "var(--color-primary)",
-};
-
-const optionalStyle: CSSProperties = {
-  fontWeight: 400,
-  color: "var(--color-text-subtle)",
-};
-
-const fieldHelpStyle: CSSProperties = {
-  fontSize: "var(--font-size-xs)",
-  color: "var(--color-text-subtle)",
-};
-
-const inputStyle_unused = {}; // replaced by .form-input CSS class
-
-const primaryBtnStyle_unused = {}; // replaced by .btn-primary CSS class
-
-const secondaryBtnStyle_unused = {}; // replaced by .btn-secondary CSS class
-
-const mutedTextStyle: CSSProperties = {
-  color: "var(--color-text-muted)",
-  fontSize: "var(--font-size-sm)",
-  padding: "var(--space-4) 0",
-};
-
-const tableWrapStyle: CSSProperties = {
-  overflowX: "auto",
-};
-
-const tableStyle: CSSProperties = {
-  width: "100%",
-  borderCollapse: "collapse",
-};
-
-const theadRowStyle: CSSProperties = {
-  background: "var(--color-bg)",
-};
-
-const thStyle: CSSProperties = {
-  textAlign: "left",
-  padding: "var(--space-3) var(--space-4)",
-  fontSize: "var(--font-size-xs)",
-  fontWeight: 600,
-  textTransform: "uppercase",
-  letterSpacing: "0.05em",
-  color: "var(--color-text-muted)",
-  borderBottom: "1px solid var(--color-border)",
-  whiteSpace: "nowrap",
-};
-
-const tdStyle: CSSProperties = {
-  padding: "var(--space-3) var(--space-4)",
-  fontSize: "var(--font-size-base)",
-  borderBottom: "1px solid var(--color-border)",
-  verticalAlign: "middle",
-};
-
-const durationStyle: CSSProperties = {
-  display: "block",
-  fontWeight: 500,
-  color: "var(--color-text)",
-};
-
-const durationHintStyle: CSSProperties = {
-  display: "block",
-  fontSize: "var(--font-size-xs)",
-  color: "var(--color-text-subtle)",
-  marginTop: 1,
 };

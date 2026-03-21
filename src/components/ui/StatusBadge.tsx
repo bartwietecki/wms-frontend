@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import type { WorkEntryStatus } from "../../api/types";
+import type { WorkEntryStatus } from "../../api/employee/types";
 
 interface StatusBadgeProps {
   status: WorkEntryStatus;

@@ -1,4 +1,4 @@
-import { http } from "./http";
+import { http } from "../http";
 import type { CreateWorkEntryRequest, WorkEntry } from "./types";
 
 export function getMyWorkEntries(from: string, to: string) {

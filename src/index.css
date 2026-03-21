@@ -1,12 +1,17 @@
-* {
+@import "./styles/tokens.css";
+
+*, *::before, *::after {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-  background-color: #f5f6f8;
-  color: #111;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
 a {
@@ -14,6 +19,16 @@ a {
   color: inherit;
 }
 
-button {
+button, input, textarea, select {
   font-family: inherit;
+  font-size: inherit;
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+  line-height: 1.3;
+}
+
+p {
+  margin: 0;
 }

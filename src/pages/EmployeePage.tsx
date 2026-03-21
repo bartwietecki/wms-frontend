@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
+import type { CSSProperties } from "react";
 import { createWorkEntry, getMyWorkEntries } from "../api/workEntriesApi";
 import type { WorkEntry } from "../api/types";
+import Card from "../components/ui/Card";
+import PageHeader from "../components/ui/PageHeader";
+import StatusBadge from "../components/ui/StatusBadge";
+import EmptyState from "../components/ui/EmptyState";
 
 function getToday(): string {
   return new Date().toISOString().split("T")[0];
@@ -8,9 +13,7 @@ function getToday(): string {
 
 function getMonthStart(): string {
   const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), 1)
-    .toISOString()
-    .split("T")[0];
+  return new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
 }
 
 export default function EmployeePage() {
@@ -39,27 +42,21 @@ export default function EmployeePage() {
     }
   }
 
-  useEffect(() => {
-    loadEntries();
-  }, []);
+  useEffect(() => { loadEntries(); }, []);
 
-  async function handleCreateSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
+  async function handleCreateSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     try {
       setSubmitting(true);
       setError(null);
-
       await createWorkEntry({
         workDate,
         minutes: Number(minutes),
         description: description.trim(),
       });
-
       setWorkDate(getToday());
       setMinutes("480");
       setDescription("");
-
       await loadEntries();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create work log");
@@ -68,34 +65,39 @@ export default function EmployeePage() {
     }
   }
 
-  async function handleFilterSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function handleFilterSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     await loadEntries();
   }
 
   return (
     <div>
-      <h2>Employee Panel</h2>
+      <PageHeader
+        title="Employee Panel"
+        subtitle="Log your work hours and track submission status."
+      />
 
-      <section style={sectionStyle}>
-        <h3>Add Work Log</h3>
+      {error && <div style={errorBannerStyle}>{error}</div>}
 
-        <form onSubmit={handleCreateSubmit} style={formStyle}>
-          <label>
-            Date
-            <br />
+      {/* Add Work Log */}
+      <Card style={{ maxWidth: 480, marginBottom: "var(--space-8)" }}>
+        <h2 style={cardTitleStyle}>Add Work Log</h2>
+        <form onSubmit={handleCreateSubmit} style={formGridStyle}>
+          <div style={fieldStyle}>
+            <label style={labelStyle}>Date</label>
             <input
+              style={inputStyle}
               type="date"
               value={workDate}
               onChange={(e) => setWorkDate(e.target.value)}
               required
             />
-          </label>
+          </div>
 
-          <label>
-            Minutes
-            <br />
+          <div style={fieldStyle}>
+            <label style={labelStyle}>Minutes</label>
             <input
+              style={inputStyle}
               type="number"
               min="1"
               step="1"
@@ -103,128 +105,216 @@ export default function EmployeePage() {
               onChange={(e) => setMinutes(e.target.value)}
               required
             />
-          </label>
+          </div>
 
-          <label>
-            Description
-            <br />
+          <div style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
+            <label style={labelStyle}>Description</label>
             <textarea
+              style={{ ...inputStyle, resize: "vertical", minHeight: 80 }}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              rows={4}
+              rows={3}
             />
-          </label>
+          </div>
 
-          <button type="submit" disabled={submitting}>
-            {submitting ? "Saving..." : "Add Work Log"}
-          </button>
+          <div style={{ gridColumn: "1 / -1" }}>
+            <button style={primaryBtnStyle} type="submit" disabled={submitting}>
+              {submitting ? "Saving…" : "Add Work Log"}
+            </button>
+          </div>
         </form>
-      </section>
+      </Card>
 
-      <section style={sectionStyle}>
-        <h3>My Work Logs</h3>
+      {/* Work Log List */}
+      <Card>
+        <div style={cardHeaderRowStyle}>
+          <h2 style={cardTitleStyle}>My Work Logs</h2>
+          <form onSubmit={handleFilterSubmit} style={filterRowStyle}>
+            <div style={fieldStyle}>
+              <label style={labelStyle}>From</label>
+              <input
+                style={inputStyle}
+                type="date"
+                value={from}
+                onChange={(e) => setFrom(e.target.value)}
+                required
+              />
+            </div>
+            <div style={fieldStyle}>
+              <label style={labelStyle}>To</label>
+              <input
+                style={inputStyle}
+                type="date"
+                value={to}
+                onChange={(e) => setTo(e.target.value)}
+                required
+              />
+            </div>
+            <button style={secondaryBtnStyle} type="submit" disabled={loading}>
+              {loading ? "Loading…" : "Apply"}
+            </button>
+          </form>
+        </div>
 
-        <form onSubmit={handleFilterSubmit} style={filtersStyle}>
-          <label>
-            From
-            <br />
-            <input
-              type="date"
-              value={from}
-              onChange={(e) => setFrom(e.target.value)}
-              required
-            />
-          </label>
+        {loading && <p style={mutedTextStyle}>Loading work logs…</p>}
 
-          <label>
-            To
-            <br />
-            <input
-              type="date"
-              value={to}
-              onChange={(e) => setTo(e.target.value)}
-              required
-            />
-          </label>
-
-          <button type="submit" disabled={loading}>
-            {loading ? "Loading..." : "Refresh"}
-          </button>
-        </form>
-
-        {error && <p style={errorStyle}>{error}</p>}
-
-        {loading && <p>Loading work logs...</p>}
-
-        {!loading && entries.length === 0 && <p>No work logs found.</p>}
+        {!loading && entries.length === 0 && (
+          <EmptyState message="No work logs found for the selected period." />
+        )}
 
         {!loading && entries.length > 0 && (
-          <table style={tableStyle}>
-            <thead>
-              <tr>
-                <th style={thStyle}>Date</th>
-                <th style={thStyle}>Minutes</th>
-                <th style={thStyle}>Description</th>
-                <th style={thStyle}>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {entries.map((entry) => (
-                <tr key={entry.id}>
-                  <td style={tdStyle}>{entry.workDate}</td>
-                  <td style={tdStyle}>{entry.minutes}</td>
-                  <td style={tdStyle}>{entry.description?.trim() || "-"}</td>
-                  <td style={tdStyle}>{entry.status}</td>
+          <div style={tableWrapStyle}>
+            <table style={tableStyle}>
+              <thead>
+                <tr>
+                  <th style={thStyle}>Date</th>
+                  <th style={thStyle}>Minutes</th>
+                  <th style={thStyle}>Description</th>
+                  <th style={thStyle}>Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {entries.map((entry) => (
+                  <tr key={entry.id} style={trStyle}>
+                    <td style={tdStyle}>{entry.workDate}</td>
+                    <td style={tdStyle}>{entry.minutes}</td>
+                    <td style={{ ...tdStyle, color: "var(--color-text-muted)" }}>
+                      {entry.description?.trim() || <span style={{ color: "var(--color-text-subtle)" }}>—</span>}
+                    </td>
+                    <td style={tdStyle}>
+                      <StatusBadge status={entry.status} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
-      </section>
+      </Card>
     </div>
   );
 }
 
-const sectionStyle: React.CSSProperties = {
-  marginBottom: 32,
+// ─── Styles ───────────────────────────────────────────────────────────────────
+
+const errorBannerStyle: CSSProperties = {
+  background: "var(--color-danger-bg)",
+  color: "var(--color-danger-text)",
+  border: "1px solid var(--color-danger-border)",
+  borderRadius: "var(--radius-sm)",
+  padding: "var(--space-3) var(--space-4)",
+  marginBottom: "var(--space-6)",
+  fontSize: "var(--font-size-sm)",
+  fontWeight: 500,
 };
 
-const formStyle: React.CSSProperties = {
-  display: "grid",
-  gap: 12,
-  maxWidth: 420,
-  padding: 16,
-  border: "1px solid #ddd",
-  borderRadius: 8,
-  background: "#fff",
-};
-
-const filtersStyle: React.CSSProperties = {
-  display: "flex",
-  gap: 12,
-  alignItems: "end",
-  flexWrap: "wrap",
-  marginBottom: 16,
-};
-
-const errorStyle: React.CSSProperties = {
-  color: "crimson",
+const cardTitleStyle: CSSProperties = {
+  fontSize: "var(--font-size-md)",
   fontWeight: 600,
+  color: "var(--color-text)",
+  marginBottom: "var(--space-5)",
 };
 
-const tableStyle: React.CSSProperties = {
+const cardHeaderRowStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "flex-end",
+  justifyContent: "space-between",
+  flexWrap: "wrap",
+  gap: "var(--space-4)",
+  marginBottom: "var(--space-5)",
+};
+
+const formGridStyle: CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gap: "var(--space-4)",
+};
+
+const filterRowStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "flex-end",
+  gap: "var(--space-3)",
+  flexWrap: "wrap",
+};
+
+const fieldStyle: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "var(--space-1)",
+};
+
+const labelStyle: CSSProperties = {
+  fontSize: "var(--font-size-sm)",
+  fontWeight: 500,
+  color: "var(--color-text-muted)",
+};
+
+const inputStyle: CSSProperties = {
+  padding: "8px 10px",
+  border: "1px solid var(--color-border-strong)",
+  borderRadius: "var(--radius-sm)",
+  fontSize: "var(--font-size-base)",
+  color: "var(--color-text)",
+  background: "var(--color-surface)",
+  outline: "none",
+  width: "100%",
+};
+
+const primaryBtnStyle: CSSProperties = {
+  padding: "9px 20px",
+  background: "var(--color-primary)",
+  color: "#fff",
+  border: "none",
+  borderRadius: "var(--radius-sm)",
+  fontWeight: 600,
+  fontSize: "var(--font-size-sm)",
+  cursor: "pointer",
+};
+
+const secondaryBtnStyle: CSSProperties = {
+  padding: "8px 16px",
+  background: "var(--color-surface)",
+  color: "var(--color-primary)",
+  border: "1px solid var(--color-primary-border)",
+  borderRadius: "var(--radius-sm)",
+  fontWeight: 600,
+  fontSize: "var(--font-size-sm)",
+  cursor: "pointer",
+  whiteSpace: "nowrap",
+};
+
+const mutedTextStyle: CSSProperties = {
+  color: "var(--color-text-muted)",
+  fontSize: "var(--font-size-sm)",
+  padding: "var(--space-4) 0",
+};
+
+const tableWrapStyle: CSSProperties = {
+  overflowX: "auto",
+};
+
+const tableStyle: CSSProperties = {
   width: "100%",
   borderCollapse: "collapse",
-  background: "#fff",
 };
 
-const thStyle: React.CSSProperties = {
+const thStyle: CSSProperties = {
   textAlign: "left",
-  borderBottom: "1px solid #ddd",
-  padding: 12,
+  padding: "var(--space-3) var(--space-4)",
+  fontSize: "var(--font-size-xs)",
+  fontWeight: 600,
+  textTransform: "uppercase",
+  letterSpacing: "0.05em",
+  color: "var(--color-text-muted)",
+  borderBottom: "1px solid var(--color-border)",
+  whiteSpace: "nowrap",
 };
 
-const tdStyle: React.CSSProperties = {
-  borderBottom: "1px solid #eee",
-  padding: 12,
+const trStyle: CSSProperties = {};
+
+const tdStyle: CSSProperties = {
+  padding: "var(--space-3) var(--space-4)",
+  fontSize: "var(--font-size-base)",
+  borderBottom: "1px solid var(--color-border)",
+  verticalAlign: "middle",
 };

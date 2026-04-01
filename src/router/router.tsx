@@ -5,6 +5,7 @@ import AdminLayout from "../components/layout/AdminLayout";
 import LoginPage from "../pages/LoginPage";
 import EmployeePage from "../pages/EmployeePage";
 import AdminReviewPage from "../pages/AdminReviewPage";
+import AdminEmployeesPage from "../pages/AdminEmployeesPage";
 
 export const router = createBrowserRouter([
   {
@@ -31,6 +32,7 @@ export const router = createBrowserRouter([
         element: <AdminLayout />,
         children: [
           { path: "/admin/work-entries", element: <AdminReviewPage /> },
+          { path: "/admin/employees", element: <AdminEmployeesPage /> },
         ],
       },
     ],

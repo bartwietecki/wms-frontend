@@ -19,6 +19,7 @@ export default function ReviewedEntriesTable({ entries }: ReviewedEntriesTablePr
         <table style={tableStyle}>
           <thead>
             <tr style={theadRowStyle}>
+              <th style={thStyle}>Employee</th>
               <th style={thStyle}>Date</th>
               <th style={thStyle}>Duration</th>
               <th style={thStyle}>Description</th>
@@ -28,6 +29,7 @@ export default function ReviewedEntriesTable({ entries }: ReviewedEntriesTablePr
           <tbody>
             {entries.map((entry) => (
               <tr key={entry.id} className="table-row-hover">
+                <td style={tdStyle}>{entry.employeeName}</td>
                 <td style={tdStyle}>{entry.workDate}</td>
                 <td style={tdStyle}>
                   <span style={durationStyle}>{entry.minutes} min</span>

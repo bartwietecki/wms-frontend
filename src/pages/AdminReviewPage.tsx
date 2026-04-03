@@ -5,12 +5,14 @@ import type { WorkEntry } from "../api/admin/types";
 import PageHeader from "../components/ui/PageHeader";
 import PendingEntriesTable from "../features/admin/PendingEntriesTable";
 import ReviewedEntriesTable from "../features/admin/ReviewedEntriesTable";
+import EditWorkEntryModal from "../features/admin/EditWorkEntryModal";
 
 export default function AdminReviewPage() {
   const [entries, setEntries] = useState<WorkEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [actioningId, setActioningId] = useState<number | null>(null);
+  const [editingEntry, setEditingEntry] = useState<WorkEntry | null>(null);
 
   async function loadEntries() {
     try {
@@ -53,6 +55,11 @@ export default function AdminReviewPage() {
     }
   }
 
+  function handleEditSaved() {
+    setEditingEntry(null);
+    loadEntries();
+  }
+
   const pending = entries.filter((e) => e.status === "PENDING");
   const reviewed = entries.filter((e) => e.status !== "PENDING");
 
@@ -77,9 +84,21 @@ export default function AdminReviewPage() {
         actioningId={actioningId}
         onApprove={handleApprove}
         onReject={handleReject}
+        onEdit={setEditingEntry}
       />
 
-      <ReviewedEntriesTable entries={reviewed} />
+      <ReviewedEntriesTable
+        entries={reviewed}
+        onEdit={setEditingEntry}
+      />
+
+      {editingEntry && (
+        <EditWorkEntryModal
+          entry={editingEntry}
+          onClose={() => setEditingEntry(null)}
+          onSaved={handleEditSaved}
+        />
+      )}
     </div>
   );
 }

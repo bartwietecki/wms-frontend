@@ -6,9 +6,10 @@ import StatusBadge from "../../components/ui/StatusBadge";
 
 interface ReviewedEntriesTableProps {
   entries: WorkEntry[];
+  onEdit: (entry: WorkEntry) => void;
 }
 
-export default function ReviewedEntriesTable({ entries }: ReviewedEntriesTableProps) {
+export default function ReviewedEntriesTable({ entries, onEdit }: ReviewedEntriesTableProps) {
   if (entries.length === 0) return null;
 
   return (
@@ -24,6 +25,7 @@ export default function ReviewedEntriesTable({ entries }: ReviewedEntriesTablePr
               <th style={thStyle}>Duration</th>
               <th style={thStyle}>Description</th>
               <th style={thStyle}>Status</th>
+              <th style={{ ...thStyle, textAlign: "right" }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -42,6 +44,11 @@ export default function ReviewedEntriesTable({ entries }: ReviewedEntriesTablePr
                 </td>
                 <td style={tdStyle}>
                   <StatusBadge status={entry.status} />
+                </td>
+                <td style={{ ...tdStyle, textAlign: "right" }}>
+                  <button className="btn-edit" onClick={() => onEdit(entry)}>
+                    ✎ Edit
+                  </button>
                 </td>
               </tr>
             ))}

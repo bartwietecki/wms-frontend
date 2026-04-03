@@ -11,6 +11,7 @@ interface PendingEntriesTableProps {
   onApprove: (id: number) => void;
   onReject: (id: number) => void;
   onEdit: (entry: WorkEntry) => void;
+  onDelete: (entry: WorkEntry) => void;
 }
 
 export default function PendingEntriesTable({
@@ -20,6 +21,7 @@ export default function PendingEntriesTable({
   onApprove,
   onReject,
   onEdit,
+  onDelete,
 }: PendingEntriesTableProps) {
   return (
     <div style={cardStyle}>
@@ -96,6 +98,13 @@ export default function PendingEntriesTable({
                         disabled={actioningId === entry.id}
                       >
                         {actioningId === entry.id ? "…" : "✕ Reject"}
+                      </button>
+                      <button
+                        className="btn-danger"
+                        onClick={() => onDelete(entry)}
+                        disabled={actioningId === entry.id}
+                      >
+                        🗑 Delete
                       </button>
                     </div>
                   </td>

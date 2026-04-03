@@ -7,9 +7,10 @@ import StatusBadge from "../../components/ui/StatusBadge";
 interface ReviewedEntriesTableProps {
   entries: WorkEntry[];
   onEdit: (entry: WorkEntry) => void;
+  onDelete: (entry: WorkEntry) => void;
 }
 
-export default function ReviewedEntriesTable({ entries, onEdit }: ReviewedEntriesTableProps) {
+export default function ReviewedEntriesTable({ entries, onEdit, onDelete }: ReviewedEntriesTableProps) {
   if (entries.length === 0) return null;
 
   return (
@@ -46,9 +47,14 @@ export default function ReviewedEntriesTable({ entries, onEdit }: ReviewedEntrie
                   <StatusBadge status={entry.status} />
                 </td>
                 <td style={{ ...tdStyle, textAlign: "right" }}>
-                  <button className="btn-edit" onClick={() => onEdit(entry)}>
-                    ✎ Edit
-                  </button>
+                  <div style={actionRowStyle}>
+                    <button className="btn-edit" onClick={() => onEdit(entry)}>
+                      ✎ Edit
+                    </button>
+                    <button className="btn-danger" onClick={() => onDelete(entry)}>
+                      🗑 Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -106,4 +112,10 @@ const durationHintStyle: CSSProperties = {
   fontSize: "var(--font-size-xs)",
   color: "var(--color-text-subtle)",
   marginTop: 1,
+};
+
+const actionRowStyle: CSSProperties = {
+  display: "flex",
+  gap: "var(--space-2)",
+  justifyContent: "flex-end",
 };

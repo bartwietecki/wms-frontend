@@ -6,6 +6,7 @@ import PageHeader from "../components/ui/PageHeader";
 import PendingEntriesTable from "../features/admin/PendingEntriesTable";
 import ReviewedEntriesTable from "../features/admin/ReviewedEntriesTable";
 import EditWorkEntryModal from "../features/admin/EditWorkEntryModal";
+import DeleteWorkEntryModal from "../features/admin/DeleteWorkEntryModal";
 
 export default function AdminReviewPage() {
   const [entries, setEntries] = useState<WorkEntry[]>([]);
@@ -13,6 +14,7 @@ export default function AdminReviewPage() {
   const [error, setError] = useState<string | null>(null);
   const [actioningId, setActioningId] = useState<number | null>(null);
   const [editingEntry, setEditingEntry] = useState<WorkEntry | null>(null);
+  const [deletingEntry, setDeletingEntry] = useState<WorkEntry | null>(null);
 
   async function loadEntries() {
     try {
@@ -85,11 +87,13 @@ export default function AdminReviewPage() {
         onApprove={handleApprove}
         onReject={handleReject}
         onEdit={setEditingEntry}
+        onDelete={setDeletingEntry}
       />
 
       <ReviewedEntriesTable
         entries={reviewed}
         onEdit={setEditingEntry}
+        onDelete={setDeletingEntry}
       />
 
       {editingEntry && (
@@ -97,6 +101,14 @@ export default function AdminReviewPage() {
           entry={editingEntry}
           onClose={() => setEditingEntry(null)}
           onSaved={handleEditSaved}
+        />
+      )}
+
+      {deletingEntry && (
+        <DeleteWorkEntryModal
+          entry={deletingEntry}
+          onClose={() => setDeletingEntry(null)}
+          onDeleted={() => { setDeletingEntry(null); loadEntries(); }}
         />
       )}
     </div>

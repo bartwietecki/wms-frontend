@@ -29,3 +29,9 @@ export function updateWorkEntry(id: number, request: UpdateWorkEntryRequest) {
     body: JSON.stringify(request),
   });
 }
+
+export function deleteWorkEntry(id: number) {
+  return http<void>(`/api/admin/work-entries/${id}`, {
+    method: "DELETE",
+  });
+}

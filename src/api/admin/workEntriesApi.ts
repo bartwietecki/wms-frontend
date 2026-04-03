@@ -1,6 +1,12 @@
 import { http } from "../http";
 import type { WorkEntry } from "./types";
 
+export interface UpdateWorkEntryRequest {
+  workDate: string;
+  minutes: number;
+  description: string;
+}
+
 export function getAllWorkEntries() {
   return http<WorkEntry[]>("/api/admin/work-entries");
 }
@@ -14,5 +20,12 @@ export function approveWorkEntry(id: number) {
 export function rejectWorkEntry(id: number) {
   return http<WorkEntry>(`/api/admin/work-entries/${id}/reject`, {
     method: "POST",
+  });
+}
+
+export function updateWorkEntry(id: number, request: UpdateWorkEntryRequest) {
+  return http<WorkEntry>(`/api/admin/work-entries/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(request),
   });
 }

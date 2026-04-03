@@ -79,13 +79,6 @@ export default function PendingEntriesTable({
                   <td style={{ ...tdStyle, textAlign: "right" }}>
                     <div style={actionRowStyle}>
                       <button
-                        className="btn-edit"
-                        onClick={() => onEdit(entry)}
-                        disabled={actioningId === entry.id}
-                      >
-                        ✎ Edit
-                      </button>
-                      <button
                         className="btn-approve"
                         onClick={() => onApprove(entry.id)}
                         disabled={actioningId === entry.id}
@@ -99,13 +92,22 @@ export default function PendingEntriesTable({
                       >
                         {actioningId === entry.id ? "…" : "✕ Reject"}
                       </button>
-                      <button
-                        className="btn-danger"
-                        onClick={() => onDelete(entry)}
-                        disabled={actioningId === entry.id}
-                      >
-                        🗑 Delete
-                      </button>
+                      <div style={stackedActionsStyle}>
+                        <button
+                          className="btn-edit"
+                          onClick={() => onEdit(entry)}
+                          disabled={actioningId === entry.id}
+                        >
+                          ✎ Edit
+                        </button>
+                        <button
+                          className="btn-danger"
+                          onClick={() => onDelete(entry)}
+                          disabled={actioningId === entry.id}
+                        >
+                          🗑 Delete
+                        </button>
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -222,4 +224,14 @@ const actionRowStyle: CSSProperties = {
   display: "flex",
   gap: "var(--space-2)",
   justifyContent: "flex-end",
+  alignItems: "center",
+};
+
+const stackedActionsStyle: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "var(--space-1)",
+  marginLeft: "var(--space-1)",
+  borderLeft: "1px solid var(--color-border)",
+  paddingLeft: "var(--space-3)",
 };

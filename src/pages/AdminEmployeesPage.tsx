@@ -4,6 +4,7 @@ import { getEmployees } from "../api/admin/employeesApi";
 import type { Employee } from "../api/admin/types";
 import PageHeader from "../components/ui/PageHeader";
 import EmployeeTable from "../features/admin/EmployeeTable";
+import CreateEmployeeModal from "../features/admin/CreateEmployeeModal";
 
 export default function AdminEmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -12,6 +13,7 @@ export default function AdminEmployeesPage() {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   async function loadEmployees(p: number) {
     try {
@@ -31,12 +33,22 @@ export default function AdminEmployeesPage() {
 
   useEffect(() => { loadEmployees(0); }, []);
 
+  function handleCreated() {
+    setShowCreateModal(false);
+    loadEmployees(0);
+  }
+
   return (
     <div>
       <PageHeader
         area="admin"
         title="Employees"
         subtitle="Browse and manage registered employees."
+        action={
+          <button className="btn-primary" onClick={() => setShowCreateModal(true)}>
+            + Add employee
+          </button>
+        }
       />
 
       {error && <div style={errorBannerStyle}>{error}</div>}
@@ -49,6 +61,13 @@ export default function AdminEmployeesPage() {
         totalPages={totalPages}
         onPageChange={loadEmployees}
       />
+
+      {showCreateModal && (
+        <CreateEmployeeModal
+          onClose={() => setShowCreateModal(false)}
+          onCreated={handleCreated}
+        />
+      )}
     </div>
   );
 }

@@ -32,3 +32,9 @@ export function updateEmployee(id: number, request: UpdateEmployeeRequest) {
     body: JSON.stringify(request),
   });
 }
+
+export function deleteEmployee(id: number) {
+  return http<void>(`/api/admin/employees/${id}`, {
+    method: "DELETE",
+  });
+}

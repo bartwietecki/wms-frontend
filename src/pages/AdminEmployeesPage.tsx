@@ -5,6 +5,7 @@ import type { Employee } from "../api/admin/types";
 import PageHeader from "../components/ui/PageHeader";
 import EmployeeTable from "../features/admin/EmployeeTable";
 import CreateEmployeeModal from "../features/admin/CreateEmployeeModal";
+import EditEmployeeModal from "../features/admin/EditEmployeeModal";
 
 export default function AdminEmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -14,6 +15,7 @@ export default function AdminEmployeesPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
 
   async function loadEmployees(p: number) {
     try {
@@ -60,12 +62,21 @@ export default function AdminEmployeesPage() {
         page={page}
         totalPages={totalPages}
         onPageChange={loadEmployees}
+        onEdit={setEditingEmployee}
       />
 
       {showCreateModal && (
         <CreateEmployeeModal
           onClose={() => setShowCreateModal(false)}
           onCreated={handleCreated}
+        />
+      )}
+
+      {editingEmployee && (
+        <EditEmployeeModal
+          employee={editingEmployee}
+          onClose={() => setEditingEmployee(null)}
+          onSaved={() => { setEditingEmployee(null); loadEmployees(page); }}
         />
       )}
     </div>

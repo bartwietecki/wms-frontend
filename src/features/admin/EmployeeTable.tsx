@@ -10,6 +10,7 @@ interface EmployeeTableProps {
   page: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  onEdit: (employee: Employee) => void;
 }
 
 export default function EmployeeTable({
@@ -19,6 +20,7 @@ export default function EmployeeTable({
   page,
   totalPages,
   onPageChange,
+  onEdit,
 }: EmployeeTableProps) {
   return (
     <Card>
@@ -48,6 +50,7 @@ export default function EmployeeTable({
                   <th style={thStyle}>Position</th>
                   <th style={thStyle}>Employment Type</th>
                   <th style={thStyle}>Status</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -63,6 +66,11 @@ export default function EmployeeTable({
                       <span style={emp.active ? activeBadgeStyle : inactiveBadgeStyle}>
                         {emp.active ? "Active" : "Inactive"}
                       </span>
+                    </td>
+                    <td style={{ ...tdStyle, textAlign: "right" }}>
+                      <button className="btn-edit" onClick={() => onEdit(emp)}>
+                        ✎ Edit
+                      </button>
                     </td>
                   </tr>
                 ))}

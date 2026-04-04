@@ -6,6 +6,7 @@ import PageHeader from "../components/ui/PageHeader";
 import EmployeeTable from "../features/admin/EmployeeTable";
 import CreateEmployeeModal from "../features/admin/CreateEmployeeModal";
 import EditEmployeeModal from "../features/admin/EditEmployeeModal";
+import DeleteEmployeeModal from "../features/admin/DeleteEmployeeModal";
 
 export default function AdminEmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -16,6 +17,7 @@ export default function AdminEmployeesPage() {
   const [totalElements, setTotalElements] = useState(0);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
+  const [deletingEmployee, setDeletingEmployee] = useState<Employee | null>(null);
 
   async function loadEmployees(p: number) {
     try {
@@ -63,6 +65,7 @@ export default function AdminEmployeesPage() {
         totalPages={totalPages}
         onPageChange={loadEmployees}
         onEdit={setEditingEmployee}
+        onDelete={setDeletingEmployee}
       />
 
       {showCreateModal && (
@@ -77,6 +80,14 @@ export default function AdminEmployeesPage() {
           employee={editingEmployee}
           onClose={() => setEditingEmployee(null)}
           onSaved={() => { setEditingEmployee(null); loadEmployees(page); }}
+        />
+      )}
+
+      {deletingEmployee && (
+        <DeleteEmployeeModal
+          employee={deletingEmployee}
+          onClose={() => setDeletingEmployee(null)}
+          onDeleted={() => { setDeletingEmployee(null); loadEmployees(page); }}
         />
       )}
     </div>

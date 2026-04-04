@@ -11,6 +11,7 @@ interface EmployeeTableProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   onEdit: (employee: Employee) => void;
+  onDelete: (employee: Employee) => void;
 }
 
 export default function EmployeeTable({
@@ -21,6 +22,7 @@ export default function EmployeeTable({
   totalPages,
   onPageChange,
   onEdit,
+  onDelete,
 }: EmployeeTableProps) {
   return (
     <Card>
@@ -68,9 +70,14 @@ export default function EmployeeTable({
                       </span>
                     </td>
                     <td style={{ ...tdStyle, textAlign: "right" }}>
-                      <button className="btn-edit" onClick={() => onEdit(emp)}>
-                        ✎ Edit
-                      </button>
+                      <div style={actionRowStyle}>
+                        <button className="btn-edit" onClick={() => onEdit(emp)}>
+                          ✎ Edit
+                        </button>
+                        <button className="btn-danger" onClick={() => onDelete(emp)}>
+                          🗑 Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -196,4 +203,10 @@ const paginationStyle: CSSProperties = {
 const pageInfoStyle: CSSProperties = {
   fontSize: "var(--font-size-sm)",
   color: "var(--color-text-muted)",
+};
+
+const actionRowStyle: CSSProperties = {
+  display: "flex",
+  gap: "var(--space-2)",
+  justifyContent: "flex-end",
 };

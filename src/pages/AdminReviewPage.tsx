@@ -1,27 +1,46 @@
 import { useEffect, useState } from "react";
 import type { CSSProperties } from "react";
-import { getAllWorkEntries, approveWorkEntry, rejectWorkEntry } from "../api/admin/workEntriesApi";
+import {
+  getWorkEntries,
+  approveWorkEntry,
+  rejectWorkEntry,
+} from "../api/admin/workEntriesApi";
+import type { WorkEntryFilters } from "../api/admin/workEntriesApi";
 import type { WorkEntry } from "../api/admin/types";
 import PageHeader from "../components/ui/PageHeader";
-import PendingEntriesTable from "../features/admin/PendingEntriesTable";
-import ReviewedEntriesTable from "../features/admin/ReviewedEntriesTable";
+import WorkEntryFilterBar from "../features/admin/WorkEntryFilterBar";
+import WorkEntriesTable from "../features/admin/WorkEntriesTable";
 import EditWorkEntryModal from "../features/admin/EditWorkEntryModal";
 import DeleteWorkEntryModal from "../features/admin/DeleteWorkEntryModal";
+
+const EMPTY_FILTERS: WorkEntryFilters = {};
 
 export default function AdminReviewPage() {
   const [entries, setEntries] = useState<WorkEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
+
+  const [filters, setFilters] = useState<WorkEntryFilters>(EMPTY_FILTERS);
+  const [pendingFilters, setPendingFilters] = useState<WorkEntryFilters>(EMPTY_FILTERS);
+  const [search, setSearch] = useState("");
+  const [validationError, setValidationError] = useState<string | null>(null);
+
   const [actioningId, setActioningId] = useState<number | null>(null);
   const [editingEntry, setEditingEntry] = useState<WorkEntry | null>(null);
   const [deletingEntry, setDeletingEntry] = useState<WorkEntry | null>(null);
 
-  async function loadEntries() {
+  async function loadEntries(activeFilters: WorkEntryFilters, p: number) {
     try {
       setLoading(true);
       setError(null);
-      const data = await getAllWorkEntries();
-      setEntries(data);
+      const data = await getWorkEntries(activeFilters, p);
+      setEntries(data.content);
+      setTotalPages(data.totalPages);
+      setTotalElements(data.totalElements);
+      setPage(data.number);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load work entries");
     } finally {
@@ -29,14 +48,36 @@ export default function AdminReviewPage() {
     }
   }
 
-  useEffect(() => { loadEntries(); }, []);
+  useEffect(() => { loadEntries(EMPTY_FILTERS, 0); }, []);
+
+  function handleApplyFilters() {
+    if (pendingFilters.from && pendingFilters.to && pendingFilters.from > pendingFilters.to) {
+      setValidationError("'From' date cannot be after 'To' date.");
+      return;
+    }
+    setValidationError(null);
+    setFilters(pendingFilters);
+    loadEntries(pendingFilters, 0);
+  }
+
+  function handleResetFilters() {
+    setPendingFilters(EMPTY_FILTERS);
+    setFilters(EMPTY_FILTERS);
+    setSearch("");
+    setValidationError(null);
+    loadEntries(EMPTY_FILTERS, 0);
+  }
+
+  function handlePageChange(p: number) {
+    loadEntries(filters, p);
+  }
 
   async function handleApprove(id: number) {
     try {
       setActioningId(id);
       setError(null);
       await approveWorkEntry(id);
-      await loadEntries();
+      await loadEntries(filters, page);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to approve entry");
     } finally {
@@ -49,7 +90,7 @@ export default function AdminReviewPage() {
       setActioningId(id);
       setError(null);
       await rejectWorkEntry(id);
-      await loadEntries();
+      await loadEntries(filters, page);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to reject entry");
     } finally {
@@ -57,50 +98,65 @@ export default function AdminReviewPage() {
     }
   }
 
-  function handleEditSaved() {
-    setEditingEntry(null);
-    loadEntries();
-  }
-
-  const pending = entries.filter((e) => e.status === "PENDING");
-  const reviewed = entries.filter((e) => e.status !== "PENDING");
+  // Client-side search on current page
+  const visibleEntries = search.trim()
+    ? entries.filter((e) => {
+        const q = search.toLowerCase();
+        return (
+          e.employeeName.toLowerCase().includes(q) ||
+          (e.description ?? "").toLowerCase().includes(q)
+        );
+      })
+    : entries;
 
   return (
     <div>
       <PageHeader
         area="admin"
         title="Work Entry Review"
-        subtitle="Approve or reject employee work log submissions."
+        subtitle="Filter, review and manage employee work log submissions."
         action={
-          <button className="btn-secondary-admin" onClick={loadEntries} disabled={loading}>
+          <button
+            className="btn-secondary-admin"
+            onClick={() => loadEntries(filters, page)}
+            disabled={loading}
+          >
             {loading ? "Refreshing…" : "↻ Refresh"}
           </button>
         }
       />
 
+      <WorkEntryFilterBar
+        filters={pendingFilters}
+        search={search}
+        validationError={validationError}
+        onFiltersChange={setPendingFilters}
+        onSearchChange={setSearch}
+        onApply={handleApplyFilters}
+        onReset={handleResetFilters}
+      />
+
       {error && <div style={errorBannerStyle}>{error}</div>}
 
-      <PendingEntriesTable
-        entries={pending}
+      <WorkEntriesTable
+        entries={visibleEntries}
         loading={loading}
+        totalElements={totalElements}
+        page={page}
+        totalPages={totalPages}
         actioningId={actioningId}
         onApprove={handleApprove}
         onReject={handleReject}
         onEdit={setEditingEntry}
         onDelete={setDeletingEntry}
-      />
-
-      <ReviewedEntriesTable
-        entries={reviewed}
-        onEdit={setEditingEntry}
-        onDelete={setDeletingEntry}
+        onPageChange={handlePageChange}
       />
 
       {editingEntry && (
         <EditWorkEntryModal
           entry={editingEntry}
           onClose={() => setEditingEntry(null)}
-          onSaved={handleEditSaved}
+          onSaved={() => { setEditingEntry(null); loadEntries(filters, page); }}
         />
       )}
 
@@ -108,7 +164,7 @@ export default function AdminReviewPage() {
         <DeleteWorkEntryModal
           entry={deletingEntry}
           onClose={() => setDeletingEntry(null)}
-          onDeleted={() => { setDeletingEntry(null); loadEntries(); }}
+          onDeleted={() => { setDeletingEntry(null); loadEntries(filters, page); }}
         />
       )}
     </div>

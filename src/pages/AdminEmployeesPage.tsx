@@ -15,6 +15,11 @@ export default function AdminEmployeesPage() {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
+
+  // Client-side filters
+  const [search, setSearch] = useState("");
+  const [activeFilter, setActiveFilter] = useState<"all" | "active" | "inactive">("all");
+
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
   const [deletingEmployee, setDeletingEmployee] = useState<Employee | null>(null);
@@ -42,6 +47,18 @@ export default function AdminEmployeesPage() {
     loadEmployees(0);
   }
 
+  // Client-side filtering on current page
+  const visibleEmployees = employees.filter((emp) => {
+    if (activeFilter === "active" && !emp.active) return false;
+    if (activeFilter === "inactive" && emp.active) return false;
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      const fullName = `${emp.firstName} ${emp.lastName}`.toLowerCase();
+      if (!fullName.includes(q) && !emp.email.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+
   return (
     <div>
       <PageHeader
@@ -55,10 +72,32 @@ export default function AdminEmployeesPage() {
         }
       />
 
+      {/* Client-side filter bar */}
+      <div style={filterBarStyle}>
+        <input
+          className="form-input"
+          style={{ maxWidth: 280 }}
+          type="text"
+          placeholder="Search by name or email…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <select
+          className="form-input"
+          style={{ maxWidth: 160 }}
+          value={activeFilter}
+          onChange={(e) => setActiveFilter(e.target.value as "all" | "active" | "inactive")}
+        >
+          <option value="all">All statuses</option>
+          <option value="active">Active only</option>
+          <option value="inactive">Inactive only</option>
+        </select>
+      </div>
+
       {error && <div style={errorBannerStyle}>{error}</div>}
 
       <EmployeeTable
-        employees={employees}
+        employees={visibleEmployees}
         loading={loading}
         totalElements={totalElements}
         page={page}
@@ -93,6 +132,13 @@ export default function AdminEmployeesPage() {
     </div>
   );
 }
+
+const filterBarStyle: CSSProperties = {
+  display: "flex",
+  gap: "var(--space-3)",
+  marginBottom: "var(--space-5)",
+  flexWrap: "wrap",
+};
 
 const errorBannerStyle: CSSProperties = {
   background: "var(--color-danger-bg)",

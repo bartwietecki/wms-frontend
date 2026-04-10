@@ -6,6 +6,8 @@ import { getToday, getMonthStart } from "../utils/time";
 import PageHeader from "../components/ui/PageHeader";
 import WorkLogForm from "../features/employee/WorkLogForm";
 import WorkLogTable from "../features/employee/WorkLogTable";
+import EditWorkLogModal from "../features/employee/EditWorkLogModal";
+import DeleteWorkLogModal from "../features/employee/DeleteWorkLogModal";
 
 export default function EmployeePage() {
   const [entries, setEntries] = useState<WorkEntry[]>([]);
@@ -13,6 +15,8 @@ export default function EmployeePage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [editingEntry, setEditingEntry] = useState<WorkEntry | null>(null);
+  const [deletingEntry, setDeletingEntry] = useState<WorkEntry | null>(null);
 
   const [from, setFrom] = useState(getMonthStart());
   const [to, setTo] = useState(getToday());
@@ -94,7 +98,25 @@ export default function EmployeePage() {
         onFromChange={setFrom}
         onToChange={setTo}
         onFilterSubmit={handleFilterSubmit}
+        onEdit={setEditingEntry}
+        onDelete={setDeletingEntry}
       />
+
+      {editingEntry && (
+        <EditWorkLogModal
+          entry={editingEntry}
+          onClose={() => setEditingEntry(null)}
+          onSaved={() => { setEditingEntry(null); loadEntries(); }}
+        />
+      )}
+
+      {deletingEntry && (
+        <DeleteWorkLogModal
+          entry={deletingEntry}
+          onClose={() => setDeletingEntry(null)}
+          onDeleted={() => { setDeletingEntry(null); loadEntries(); }}
+        />
+      )}
     </div>
   );
 }

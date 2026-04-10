@@ -13,6 +13,8 @@ interface WorkLogTableProps {
   onFromChange: (v: string) => void;
   onToChange: (v: string) => void;
   onFilterSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  onEdit: (entry: WorkEntry) => void;
+  onDelete: (entry: WorkEntry) => void;
 }
 
 export default function WorkLogTable({
@@ -23,6 +25,8 @@ export default function WorkLogTable({
   onFromChange,
   onToChange,
   onFilterSubmit,
+  onEdit,
+  onDelete,
 }: WorkLogTableProps) {
   return (
     <Card>
@@ -73,6 +77,7 @@ export default function WorkLogTable({
                 <th style={thStyle}>Duration</th>
                 <th style={thStyle}>Description</th>
                 <th style={thStyle}>Status</th>
+                <th style={{ ...thStyle, textAlign: "right" }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -90,6 +95,18 @@ export default function WorkLogTable({
                   </td>
                   <td style={tdStyle}>
                     <StatusBadge status={entry.status} />
+                  </td>
+                  <td style={{ ...tdStyle, textAlign: "right" }}>
+                    {entry.status === "PENDING" && (
+                      <div style={actionRowStyle}>
+                        <button className="btn-edit" onClick={() => onEdit(entry)}>
+                          ✎ Edit
+                        </button>
+                        <button className="btn-danger" onClick={() => onDelete(entry)}>
+                          🗑 Delete
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -184,4 +201,10 @@ const durationHintStyle: CSSProperties = {
   fontSize: "var(--font-size-xs)",
   color: "var(--color-text-subtle)",
   marginTop: 1,
+};
+
+const actionRowStyle: CSSProperties = {
+  display: "flex",
+  gap: "var(--space-2)",
+  justifyContent: "flex-end",
 };

@@ -12,8 +12,7 @@ import type { UserRole } from "./session";
  */
 export async function verifyCredentials(
   username: string,
-  password: string,
-  employeeId?: string
+  password: string
 ): Promise<UserRole> {
   const authHeader = `Basic ${btoa(`${username}:${password}`)}`;
 
@@ -24,22 +23,15 @@ export async function verifyCredentials(
       headers: { Authorization: authHeader },
     });
     if (res.ok || res.status === 204) return "admin";
-    if (res.status !== 401 && res.status !== 403) {
-      // Unexpected error — still treat as admin if credentials were accepted
-      // (e.g. empty list returns 200)
-    }
   } catch {
     // network error — fall through
   }
 
   // Try employee
-  const employeeHeaders: Record<string, string> = { Authorization: authHeader };
-  if (employeeId) employeeHeaders["X-EMPLOYEE-ID"] = employeeId;
-
   try {
     const res = await fetch(`${config.apiBaseUrl}/api/work-entries/my?from=2000-01-01&to=2000-01-01`, {
       method: "GET",
-      headers: employeeHeaders,
+      headers: { Authorization: authHeader },
     });
     if (res.ok || res.status === 204) return "employee";
   } catch {

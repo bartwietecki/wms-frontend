@@ -9,7 +9,6 @@ export interface UpdateWorkEntryRequest {
 
 export function getMyWorkEntries(from: string, to: string) {
   return http<WorkEntry[]>("/api/work-entries/my", {
-    requireEmployeeId: true,
     queryParams: { from, to },
   });
 }
@@ -18,7 +17,6 @@ export function createWorkEntry(request: CreateWorkEntryRequest) {
   return http<WorkEntry>("/api/work-entries", {
     method: "POST",
     body: JSON.stringify(request),
-    requireEmployeeId: true,
   });
 }
 
@@ -26,14 +24,12 @@ export function updateMyWorkEntry(id: number, request: UpdateWorkEntryRequest) {
   return http<WorkEntry>(`/api/work-entries/${id}`, {
     method: "PUT",
     body: JSON.stringify(request),
-    requireEmployeeId: true,
   });
 }
 
 export function deleteMyWorkEntry(id: number) {
   return http<void>(`/api/work-entries/${id}`, {
     method: "DELETE",
-    requireEmployeeId: true,
   });
 }
 

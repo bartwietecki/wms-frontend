@@ -4,7 +4,6 @@ export interface Session {
   username: string;
   password: string;
   role: UserRole;
-  employeeId?: string;
 }
 
 const SESSION_KEY = "wms_session";

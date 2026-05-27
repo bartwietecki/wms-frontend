@@ -13,8 +13,6 @@ export interface HttpOptions {
   method?: string;
   headers?: Record<string, string>;
   body?: string;
-  /** Pass true for employee endpoints that require X-EMPLOYEE-ID */
-  requireEmployeeId?: boolean;
   /** Appended to the URL as ?key=value pairs */
   queryParams?: Record<string, string>;
 }
@@ -26,7 +24,6 @@ export async function http<T>(path: string, options: HttpOptions = {}): Promise<
     method = "GET",
     headers: extraHeaders = {},
     body,
-    requireEmployeeId = false,
     queryParams,
   } = options;
 
@@ -35,22 +32,9 @@ export async function http<T>(path: string, options: HttpOptions = {}): Promise<
     throw new Error("[http] No active session. Please log in.");
   }
 
-  // Fail fast: employee endpoints need a valid employeeId
-  if (requireEmployeeId && !session.employeeId) {
-    throw new Error(
-      "[http] This endpoint requires an Employee ID. " +
-      "Make sure VITE_EMPLOYEE_ID is set or provided at login."
-    );
-  }
-
-  // Build headers — only add a header when the value is valid
   const requestHeaders: Record<string, string> = {};
 
   requestHeaders["Authorization"] = buildBasicAuth(session.username, session.password);
-
-  if (requireEmployeeId && session.employeeId) {
-    requestHeaders["X-EMPLOYEE-ID"] = session.employeeId;
-  }
 
   if (body !== undefined) {
     requestHeaders["Content-Type"] = "application/json";
@@ -69,7 +53,6 @@ export async function http<T>(path: string, options: HttpOptions = {}): Promise<
     console.debug("[http]", method, url, {
       headerKeys: Object.keys(requestHeaders),
       hasAuth: "Authorization" in requestHeaders,
-      hasEmployeeId: "X-EMPLOYEE-ID" in requestHeaders,
     });
   }
 

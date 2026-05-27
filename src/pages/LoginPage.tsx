@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { verifyCredentials } from "../auth/loginApi";
 import { saveSession } from "../auth/session";
-import { config } from "../config/env";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -17,17 +16,12 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const role = await verifyCredentials(
-        username.trim(),
-        password,
-        config.defaultEmployeeId
-      );
+      const role = await verifyCredentials(username.trim(), password);
 
       saveSession({
         username: username.trim(),
         password,
         role,
-        employeeId: role === "employee" ? config.defaultEmployeeId : undefined,
       });
 
       navigate(role === "admin" ? "/admin/work-entries" : "/employee/work-entries", {

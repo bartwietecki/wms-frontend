@@ -1,13 +1,5 @@
 import { config } from "../config/env";
-import { getSession } from "../auth/session";
-
-// ─── Auth helpers ─────────────────────────────────────────────────────────────
-
-function buildBasicAuth(username: string, password: string): string {
-  return `Basic ${btoa(`${username}:${password}`)}`;
-}
-
-// ─── Request options ──────────────────────────────────────────────────────────
+import keycloak from "../auth/keycloak";
 
 export interface HttpOptions {
   method?: string;
@@ -17,8 +9,6 @@ export interface HttpOptions {
   queryParams?: Record<string, string>;
 }
 
-// ─── Core fetch wrapper ───────────────────────────────────────────────────────
-
 export async function http<T>(path: string, options: HttpOptions = {}): Promise<T> {
   const {
     method = "GET",
@@ -27,14 +17,19 @@ export async function http<T>(path: string, options: HttpOptions = {}): Promise<
     queryParams,
   } = options;
 
-  const session = getSession();
-  if (!session) {
-    throw new Error("[http] No active session. Please log in.");
+  if (!keycloak.authenticated) {
+    throw new Error("[http] Not authenticated. Please log in.");
+  }
+
+  try {
+    await keycloak.updateToken(30);
+  } catch {
+    keycloak.login();
+    throw new Error("[http] Session expired. Redirecting to login.");
   }
 
   const requestHeaders: Record<string, string> = {};
-
-  requestHeaders["Authorization"] = buildBasicAuth(session.username, session.password);
+  requestHeaders["Authorization"] = `Bearer ${keycloak.token}`;
 
   if (body !== undefined) {
     requestHeaders["Content-Type"] = "application/json";
@@ -42,13 +37,11 @@ export async function http<T>(path: string, options: HttpOptions = {}): Promise<
 
   Object.assign(requestHeaders, extraHeaders);
 
-  // Build URL
   let url = `${config.apiBaseUrl}${path}`;
   if (queryParams && Object.keys(queryParams).length > 0) {
     url += "?" + new URLSearchParams(queryParams).toString();
   }
 
-  // Dev logging — never log the raw password
   if (import.meta.env.DEV) {
     console.debug("[http]", method, url, {
       headerKeys: Object.keys(requestHeaders),
@@ -56,7 +49,6 @@ export async function http<T>(path: string, options: HttpOptions = {}): Promise<
     });
   }
 
-  // Execute request
   let response: Response;
   try {
     response = await fetch(url, { method, headers: requestHeaders, body });

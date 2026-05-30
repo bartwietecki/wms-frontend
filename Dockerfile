@@ -9,6 +9,13 @@ COPY . .
 
 # nginx proxies /api → wms-backend; empty base URL makes all API calls relative
 ENV VITE_API_BASE_URL=""
+ARG VITE_KEYCLOAK_URL=http://localhost:9090
+ARG VITE_KEYCLOAK_REALM=wms
+ARG VITE_KEYCLOAK_CLIENT_ID=wms-client
+ENV VITE_KEYCLOAK_URL=${VITE_KEYCLOAK_URL}
+ENV VITE_KEYCLOAK_REALM=${VITE_KEYCLOAK_REALM}
+ENV VITE_KEYCLOAK_CLIENT_ID=${VITE_KEYCLOAK_CLIENT_ID}
+
 RUN npm run build
 
 # ── Stage 2: Runtime ───────────────────────────────────────────────────────────

@@ -1,18 +1,12 @@
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { clearSession, getSession } from "../../auth/session";
+import { NavLink, Outlet } from "react-router-dom";
+import { useAuth } from "../../auth/AuthContext";
 
 const NAV_ITEMS = [
   { to: "/employee/work-entries", icon: "📋", label: "My Work Logs" },
 ] as const;
 
 export default function EmployeeLayout() {
-  const navigate = useNavigate();
-  const session = getSession();
-
-  function handleLogout() {
-    clearSession();
-    navigate("/login", { replace: true });
-  }
+  const { username, logout } = useAuth();
 
   return (
     <div className="app-shell">
@@ -43,10 +37,10 @@ export default function EmployeeLayout() {
 
         {/* Footer */}
         <div className="sidebar-footer">
-          {session && (
-            <div className="sidebar-user">{session.username}</div>
+          {username && (
+            <div className="sidebar-user">{username}</div>
           )}
-          <button className="sidebar-logout" onClick={handleLogout}>
+          <button className="sidebar-logout" onClick={logout}>
             <span className="sidebar-link-icon">↩</span>
             Sign out
           </button>

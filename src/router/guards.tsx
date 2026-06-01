@@ -17,7 +17,7 @@ export function RequireRole({ role }: { role: UserRole }) {
   if (isLoading || !isAuthenticated) return null;
 
   if (!roles.includes(role)) {
-    const redirect = roles.includes("admin") ? "/admin/work-entries" : "/employee/work-entries";
+    const redirect = roles.includes("admin") ? "/admin/work-entries" : "/employee/dashboard";
     return <Navigate to={redirect} replace />;
   }
 

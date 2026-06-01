@@ -15,3 +15,11 @@ export interface CreateWorkEntryRequest {
     minutes: number;
     description: string;
 }
+
+export interface EmployeeDashboard {
+    totalHoursThisMonth: number;
+    pendingEntriesCount: number;
+    approvedEntriesCount: number;
+    rejectedEntriesCount: number;
+    leaveDaysRemaining: number;
+}

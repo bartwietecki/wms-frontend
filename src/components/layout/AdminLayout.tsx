@@ -3,7 +3,7 @@ import { useAuth } from "../../auth/AuthContext";
 
 const NAV_ITEMS = [
   { to: "/admin/work-entries", icon: "✅", label: "Work Entry Review" },
-  { to: "/admin/employees",    icon: "👥", label: "Employees" },
+  { to: "/admin/employees", icon: "👥", label: "Employees" },
 ] as const;
 
 export default function AdminLayout() {

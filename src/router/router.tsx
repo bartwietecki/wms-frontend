@@ -4,6 +4,7 @@ import EmployeeLayout from "../components/layout/EmployeeLayout";
 import AdminLayout from "../components/layout/AdminLayout";
 import LoginPage from "../pages/LoginPage";
 import EmployeePage from "../pages/EmployeePage";
+import EmployeeDashboardPage from "../pages/EmployeeDashboardPage";
 import AdminReviewPage from "../pages/AdminReviewPage";
 import AdminEmployeesPage from "../pages/AdminEmployeesPage";
 
@@ -19,6 +20,7 @@ export const router = createBrowserRouter([
       {
         element: <EmployeeLayout />,
         children: [
+          { path: "/employee/dashboard", element: <EmployeeDashboardPage /> },
           { path: "/employee/work-entries", element: <EmployeePage /> },
         ],
       },

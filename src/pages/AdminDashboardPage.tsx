@@ -66,6 +66,7 @@ export default function AdminDashboardPage() {
             <StatCard
               label="Employees on Leave Today"
               value={data.employeesOnLeaveToday}
+              to="/admin/leave-requests"
             />
           </div>
         </>
@@ -121,6 +122,11 @@ export default function AdminDashboardPage() {
               to="/admin/employees"
               title="Manage Employees"
               description="View and manage employee records"
+            />
+            <ActionCard
+              to="/admin/leave-requests"
+              title="Manage Leave Requests"
+              description="Review and approve employee leave requests"
             />
           </div>
         </Card>

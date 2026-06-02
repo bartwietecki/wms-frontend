@@ -5,6 +5,7 @@ import AdminLayout from "../components/layout/AdminLayout";
 import LoginPage from "../pages/LoginPage";
 import EmployeePage from "../pages/EmployeePage";
 import EmployeeDashboardPage from "../pages/EmployeeDashboardPage";
+import EmployeeProfilePage from "../pages/EmployeeProfilePage";
 import AdminReviewPage from "../pages/AdminReviewPage";
 import AdminEmployeesPage from "../pages/AdminEmployeesPage";
 
@@ -14,7 +15,7 @@ export const router = createBrowserRouter([
     element: <LoginPage />,
   },
   {
-    // Employee area — requires employee role
+    // Employee area (requires employee role)
     element: <RequireRole role="employee" />,
     children: [
       {
@@ -22,12 +23,13 @@ export const router = createBrowserRouter([
         children: [
           { path: "/employee/dashboard", element: <EmployeeDashboardPage /> },
           { path: "/employee/work-entries", element: <EmployeePage /> },
+          { path: "/employee/profile", element: <EmployeeProfilePage /> },
         ],
       },
     ],
   },
   {
-    // Admin area — requires admin role
+    // Admin area (requires admin role()
     element: <RequireRole role="admin" />,
     children: [
       {
@@ -40,7 +42,7 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    // Root redirect — send to login, guards will redirect to correct area if already logged in
+    // Root redirect (send to login, guards will redirect to correct area if already logged in)
     path: "/",
     element: <Navigate to="/login" replace />,
   },

@@ -40,3 +40,25 @@ export interface UpdateProfileRequest {
     firstName: string;
     lastName: string;
 }
+
+export type LeaveRequestStatus = "PENDING" | "APPROVED" | "REJECTED";
+export type LeaveRequestType = "HOLIDAY" | "SICK_LEAVE";
+
+export interface LeaveRequest {
+    id: number;
+    employeeId: number;
+    employeeName: string;
+    type: LeaveRequestType;
+    startDate: string;
+    endDate: string;
+    status: LeaveRequestStatus;
+    reason: string | null;
+    createdAt: string;
+}
+
+export interface CreateLeaveRequestRequest {
+    type: LeaveRequestType;
+    startDate: string;
+    endDate: string;
+    reason?: string;
+}

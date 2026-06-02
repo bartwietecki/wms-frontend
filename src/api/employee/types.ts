@@ -23,3 +23,20 @@ export interface EmployeeDashboard {
     rejectedEntriesCount: number;
     leaveDaysRemaining: number;
 }
+
+export interface EmployeeProfile {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    position: string;
+    employmentType: string;
+    active: boolean;
+    departmentName: string;
+    positionName: string;
+}
+
+export interface UpdateProfileRequest {
+    firstName: string;
+    lastName: string;
+}

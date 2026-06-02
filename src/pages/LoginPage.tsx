@@ -13,7 +13,7 @@ export default function LoginPage() {
   }, [isLoading, isAuthenticated]);
 
   if (isAuthenticated) {
-    const to = roles.includes("admin") ? "/admin/work-entries" : "/employee/dashboard";
+    const to = roles.includes("admin") ? "/admin/dashboard" : "/employee/dashboard";
     return <Navigate to={to} replace />;
   }
 

@@ -1,7 +1,8 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
 
 const NAV_ITEMS = [
+  { to: "/admin/dashboard", icon: "▦", label: "Dashboard" },
   { to: "/admin/work-entries", icon: "✅", label: "Work Entry Review" },
   { to: "/admin/employees", icon: "👥", label: "Employees" },
 ] as const;
@@ -13,13 +14,13 @@ export default function AdminLayout() {
     <div className="app-shell">
       <aside className="sidebar">
         {/* Brand */}
-        <div className="sidebar-brand">
+        <Link to="/admin/dashboard" className="sidebar-brand">
           <div className="sidebar-brand-mark">▦</div>
           <div>
             <div className="sidebar-brand-text">WMS</div>
             <div className="sidebar-brand-role">Admin Panel</div>
           </div>
-        </div>
+        </Link>
 
         {/* Navigation */}
         <nav className="sidebar-nav">

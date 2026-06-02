@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
 
 const NAV_ITEMS = [
@@ -14,13 +14,13 @@ export default function EmployeeLayout() {
     <div className="app-shell">
       <aside className="sidebar">
         {/* Brand */}
-        <div className="sidebar-brand">
+        <Link to="/employee/dashboard" className="sidebar-brand">
           <div className="sidebar-brand-mark">▦</div>
           <div>
             <div className="sidebar-brand-text">WMS</div>
             <div className="sidebar-brand-role">Employee Panel</div>
           </div>
-        </div>
+        </Link>
 
         {/* Navigation */}
         <nav className="sidebar-nav">

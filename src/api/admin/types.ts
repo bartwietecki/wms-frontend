@@ -1,6 +1,12 @@
 // Re-exported so admin code doesn't import from the employee folder.
 export type { WorkEntry, WorkEntryStatus } from "../employee/types";
 
+export interface AdminDashboard {
+  pendingApprovalsCount: number;
+  activeEmployeesCount: number;
+  employeesOnLeaveToday: number;
+}
+
 export interface Employee {
   id: number;
   firstName: string;

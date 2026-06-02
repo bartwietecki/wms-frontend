@@ -6,8 +6,10 @@ import LoginPage from "../pages/LoginPage";
 import EmployeePage from "../pages/EmployeePage";
 import EmployeeDashboardPage from "../pages/EmployeeDashboardPage";
 import EmployeeProfilePage from "../pages/EmployeeProfilePage";
+import EmployeeLeaveRequestsPage from "../pages/EmployeeLeaveRequestsPage";
 import AdminDashboardPage from "../pages/AdminDashboardPage";
 import AdminReviewPage from "../pages/AdminReviewPage";
+import AdminLeaveRequestsPage from "../pages/AdminLeaveRequestsPage";
 import AdminEmployeesPage from "../pages/AdminEmployeesPage";
 
 export const router = createBrowserRouter([
@@ -24,6 +26,7 @@ export const router = createBrowserRouter([
         children: [
           { path: "/employee/dashboard", element: <EmployeeDashboardPage /> },
           { path: "/employee/work-entries", element: <EmployeePage /> },
+          { path: "/employee/leave-requests", element: <EmployeeLeaveRequestsPage /> },
           { path: "/employee/profile", element: <EmployeeProfilePage /> },
         ],
       },
@@ -38,6 +41,7 @@ export const router = createBrowserRouter([
         children: [
           { path: "/admin/dashboard", element: <AdminDashboardPage /> },
           { path: "/admin/work-entries", element: <AdminReviewPage /> },
+          { path: "/admin/leave-requests", element: <AdminLeaveRequestsPage /> },
           { path: "/admin/employees", element: <AdminEmployeesPage /> },
         ],
       },

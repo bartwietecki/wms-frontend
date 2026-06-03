@@ -107,6 +107,9 @@ export default function EmployeeDashboardPage() {
             <Link to="/employee/leave-requests" className="btn-secondary" style={actionLinkStyle}>
               View Leave Requests
             </Link>
+            <Link to="/employee/reports" className="btn-secondary" style={actionLinkStyle}>
+              View Monthly Reports
+            </Link>
           </div>
         </Card>
       </div>

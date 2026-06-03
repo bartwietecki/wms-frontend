@@ -62,3 +62,38 @@ export interface CreateLeaveRequestRequest {
     endDate: string;
     reason?: string;
 }
+
+export type ReportStatus = "SUBMITTED" | "APPROVED" | "REJECTED";
+
+export interface ReportEntry {
+    id: number;
+    workDate: string;
+    minutes: number;
+    description: string;
+}
+
+export interface MonthlyReportPreview {
+    employeeId: number;
+    employeeName: string;
+    year: number;
+    month: number;
+    totalMinutes: number;
+    totalHours: number;
+    entriesCount: number;
+    entries: ReportEntry[];
+    existingReportStatus: ReportStatus | null;
+}
+
+export interface MyReport {
+    id: number;
+    employeeId: number;
+    employeeName: string;
+    year: number;
+    month: number;
+    totalMinutes: number;
+    totalHours: number;
+    status: ReportStatus;
+    submittedAt: string;
+    reviewedAt: string | null;
+    adminComment: string | null;
+}

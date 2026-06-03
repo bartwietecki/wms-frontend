@@ -7,6 +7,15 @@ export function getMonthStart(): string {
   return new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
 }
 
+const MONTH_NAMES = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
+export function formatMonthName(month: number): string {
+  return MONTH_NAMES[month - 1] ?? String(month);
+}
+
 export function formatDate(isoDate: string): string {
   const [year, month, day] = isoDate.slice(0, 10).split("-");
   return `${day}/${month}/${year}`;

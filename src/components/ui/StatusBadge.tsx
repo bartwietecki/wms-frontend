@@ -1,12 +1,18 @@
 import type { CSSProperties } from "react";
-import type { WorkEntryStatus } from "../../api/employee/types";
+
+export type AppStatus = "PENDING" | "SUBMITTED" | "APPROVED" | "REJECTED";
 
 interface StatusBadgeProps {
-  status: WorkEntryStatus;
+  status: AppStatus;
 }
 
-const styles: Record<WorkEntryStatus, CSSProperties> = {
+const styles: Record<AppStatus, CSSProperties> = {
   PENDING: {
+    background: "var(--color-warning-bg)",
+    color: "var(--color-warning-text)",
+    border: "1px solid var(--color-warning-border)",
+  },
+  SUBMITTED: {
     background: "var(--color-warning-bg)",
     color: "var(--color-warning-text)",
     border: "1px solid var(--color-warning-border)",
@@ -23,8 +29,9 @@ const styles: Record<WorkEntryStatus, CSSProperties> = {
   },
 };
 
-const labels: Record<WorkEntryStatus, string> = {
+const labels: Record<AppStatus, string> = {
   PENDING: "Pending",
+  SUBMITTED: "Submitted",
   APPROVED: "Approved",
   REJECTED: "Rejected",
 };

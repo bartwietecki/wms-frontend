@@ -11,6 +11,8 @@ import AdminDashboardPage from "../pages/AdminDashboardPage";
 import AdminReviewPage from "../pages/AdminReviewPage";
 import AdminLeaveRequestsPage from "../pages/AdminLeaveRequestsPage";
 import AdminEmployeesPage from "../pages/AdminEmployeesPage";
+import EmployeeReportsPage from "../pages/EmployeeReportsPage";
+import AdminReportsPage from "../pages/AdminReportsPage";
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +29,7 @@ export const router = createBrowserRouter([
           { path: "/employee/dashboard", element: <EmployeeDashboardPage /> },
           { path: "/employee/work-entries", element: <EmployeePage /> },
           { path: "/employee/leave-requests", element: <EmployeeLeaveRequestsPage /> },
+          { path: "/employee/reports", element: <EmployeeReportsPage /> },
           { path: "/employee/profile", element: <EmployeeProfilePage /> },
         ],
       },
@@ -43,6 +46,7 @@ export const router = createBrowserRouter([
           { path: "/admin/work-entries", element: <AdminReviewPage /> },
           { path: "/admin/leave-requests", element: <AdminLeaveRequestsPage /> },
           { path: "/admin/employees", element: <AdminEmployeesPage /> },
+          { path: "/admin/reports", element: <AdminReportsPage /> },
         ],
       },
     ],

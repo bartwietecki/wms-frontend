@@ -9,6 +9,7 @@ import {
 import type { ReportFilters } from "../api/admin/reportsApi";
 import type { AdminReport, AdminReportDetail } from "../api/admin/types";
 import { formatDate, formatMonthName } from "../utils/time";
+import { parseApiError } from "../utils/apiError";
 import PageHeader from "../components/ui/PageHeader";
 import Card from "../components/ui/Card";
 import StatusBadge from "../components/ui/StatusBadge";
@@ -65,7 +66,7 @@ export default function AdminReportsPage() {
       setTotalElements(data.totalElements);
       setPage(data.number);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load reports");
+      setError(parseApiError(err, "Failed to load reports"));
     } finally {
       setLoading(false);
     }
@@ -111,7 +112,7 @@ export default function AdminReportsPage() {
       );
       setDetail({ ...data, entries: sortedEntries });
     } catch (err) {
-      setDetailError(err instanceof Error ? err.message : "Failed to load report detail");
+      setDetailError(parseApiError(err, "Failed to load report detail"));
     } finally {
       setDetailLoading(false);
     }
@@ -126,7 +127,7 @@ export default function AdminReportsPage() {
       setRejectMode(false);
       await Promise.all([loadReports(filters, page), handleView(id)]);
     } catch (err) {
-      setActionError(err instanceof Error ? err.message : "Failed to approve report");
+      setActionError(parseApiError(err, "Failed to approve report"));
     } finally {
       setActioningId(null);
     }
@@ -146,7 +147,7 @@ export default function AdminReportsPage() {
       setAdminComment("");
       await Promise.all([loadReports(filters, page), handleView(id)]);
     } catch (err) {
-      setActionError(err instanceof Error ? err.message : "Failed to reject report");
+      setActionError(parseApiError(err, "Failed to reject report"));
     } finally {
       setActioningId(null);
     }

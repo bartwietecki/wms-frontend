@@ -7,6 +7,7 @@ import {
 } from "../api/employee/reportsApi";
 import type { MonthlyReportPreview, MyReport } from "../api/employee/types";
 import { formatDate, formatMonthName } from "../utils/time";
+import { parseApiError } from "../utils/apiError";
 import PageHeader from "../components/ui/PageHeader";
 import Card from "../components/ui/Card";
 import StatusBadge from "../components/ui/StatusBadge";
@@ -57,7 +58,7 @@ export default function EmployeeReportsPage() {
       );
       setHistory(sorted);
     } catch (err) {
-      setHistoryError(err instanceof Error ? err.message : "Failed to load report history");
+      setHistoryError(parseApiError(err, "Failed to load report history"));
     } finally {
       setHistoryLoading(false);
     }
@@ -78,7 +79,7 @@ export default function EmployeeReportsPage() {
       );
       setPreview({ ...data, entries: sortedEntries });
     } catch (err) {
-      setPreviewError(err instanceof Error ? err.message : "Failed to load preview");
+      setPreviewError(parseApiError(err, "Failed to load preview"));
     } finally {
       setPreviewLoading(false);
     }
@@ -94,7 +95,7 @@ export default function EmployeeReportsPage() {
       setSubmitSuccess(`Report for ${formatMonthName(month)} ${year} submitted successfully.`);
       await Promise.all([handlePreview(), loadHistory()]);
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Failed to submit report");
+      setSubmitError(parseApiError(err, "Failed to submit report"));
     } finally {
       setSubmitting(false);
     }

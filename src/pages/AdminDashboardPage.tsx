@@ -128,6 +128,11 @@ export default function AdminDashboardPage() {
               title="Manage Leave Requests"
               description="Review and approve employee leave requests"
             />
+            <ActionCard
+              to="/admin/reports"
+              title="Review Monthly Reports"
+              description="Approve or reject submitted monthly reports"
+            />
           </div>
         </Card>
       </div>

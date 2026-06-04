@@ -1,4 +1,5 @@
 import { http } from "../http";
+import { downloadPdf } from "../../utils/downloadPdf";
 import type { AdminReport, AdminReportDetail, Page } from "./types";
 
 export interface ReportFilters {
@@ -30,4 +31,16 @@ export function rejectReport(id: number, adminComment: string) {
     method: "POST",
     body: JSON.stringify({ adminComment }),
   });
+}
+
+export function downloadAdminMonthlyReportPdf(
+  reportId: number,
+  employeeId: number,
+  year: number,
+  month: number
+): Promise<void> {
+  return downloadPdf(
+    `/api/admin/reports/${reportId}/pdf`,
+    `monthly-report-${employeeId}-${year}-${month}.pdf`
+  );
 }

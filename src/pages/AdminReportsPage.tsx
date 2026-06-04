@@ -5,6 +5,7 @@ import {
   getAdminReport,
   approveReport,
   rejectReport,
+  downloadAdminMonthlyReportPdf,
 } from "../api/admin/reportsApi";
 import type { ReportFilters } from "../api/admin/reportsApi";
 import type { AdminReport, AdminReportDetail } from "../api/admin/types";
@@ -54,6 +55,9 @@ export default function AdminReportsPage() {
 
   const [rejectMode, setRejectMode] = useState(false);
   const [adminComment, setAdminComment] = useState("");
+
+  const [pdfDownloadingId, setPdfDownloadingId] = useState<number | null>(null);
+  const [pdfError, setPdfError] = useState<string | null>(null);
 
   async function loadReports(activeFilters: ReportFilters, p: number) {
     setLoading(true);
@@ -115,6 +119,18 @@ export default function AdminReportsPage() {
       setDetailError(parseApiError(err, "Failed to load report detail"));
     } finally {
       setDetailLoading(false);
+    }
+  }
+
+  async function handlePdfDownload(r: AdminReport | AdminReportDetail) {
+    setPdfDownloadingId(r.id);
+    setPdfError(null);
+    try {
+      await downloadAdminMonthlyReportPdf(r.id, r.employeeId, r.year, r.month);
+    } catch (err) {
+      setPdfError(parseApiError(err, "Failed to download PDF"));
+    } finally {
+      setPdfDownloadingId(null);
     }
   }
 
@@ -288,12 +304,21 @@ export default function AdminReportsPage() {
                       {formatDate(r.submittedAt.slice(0, 10))}
                     </td>
                     <td style={{ ...tdStyle, textAlign: "right" }}>
-                      <button
-                        className="btn-secondary"
-                        onClick={() => handleView(r.id)}
-                      >
-                        {detail?.id === r.id ? "Close" : "View"}
-                      </button>
+                      <div style={actionRowStyle}>
+                        <button
+                          className="btn-secondary"
+                          onClick={() => handlePdfDownload(r)}
+                          disabled={pdfDownloadingId === r.id}
+                        >
+                          {pdfDownloadingId === r.id ? "…" : "↓ PDF"}
+                        </button>
+                        <button
+                          className="btn-secondary"
+                          onClick={() => handleView(r.id)}
+                        >
+                          {detail?.id === r.id ? "Close" : "View"}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -339,11 +364,20 @@ export default function AdminReportsPage() {
       {detail && !detailLoading && (
         <Card>
           {/* Summary */}
-          <div style={cardHeaderStyle}>
+          <div style={{ ...cardHeaderStyle, display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "var(--space-4)" }}>
             <h2 style={cardTitleStyle}>
               Report — {formatMonthName(detail.month)} {detail.year} · {detail.employeeName}
             </h2>
+            <button
+              className="btn-secondary-admin"
+              onClick={() => handlePdfDownload(detail)}
+              disabled={pdfDownloadingId === detail.id}
+              style={{ flexShrink: 0 }}
+            >
+              {pdfDownloadingId === detail.id ? "Downloading…" : "↓ Download PDF"}
+            </button>
           </div>
+          {pdfError && <div style={{ ...errorStyle, marginBottom: "var(--space-4)" }}>{pdfError}</div>}
 
           <div style={summaryGridStyle}>
             <SummaryItem label="Employee" value={detail.employeeName} />

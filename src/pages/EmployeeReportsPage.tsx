@@ -4,6 +4,7 @@ import {
   getMonthlyPreview,
   submitMonthlyReport,
   getMyReports,
+  downloadMonthlyReportPdf,
 } from "../api/employee/reportsApi";
 import type { MonthlyReportPreview, MyReport } from "../api/employee/types";
 import { formatDate, formatMonthName } from "../utils/time";
@@ -47,6 +48,9 @@ export default function EmployeeReportsPage() {
   const [history, setHistory] = useState<MyReport[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
   const [historyError, setHistoryError] = useState<string | null>(null);
+
+  const [downloadingId, setDownloadingId] = useState<number | null>(null);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
 
   async function loadHistory() {
     setHistoryLoading(true);
@@ -98,6 +102,18 @@ export default function EmployeeReportsPage() {
       setSubmitError(parseApiError(err, "Failed to submit report"));
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleDownload(r: MyReport) {
+    setDownloadingId(r.id);
+    setDownloadError(null);
+    try {
+      await downloadMonthlyReportPdf(r.id, r.year, r.month);
+    } catch (err) {
+      setDownloadError(parseApiError(err, "Failed to download PDF"));
+    } finally {
+      setDownloadingId(null);
     }
   }
 
@@ -244,6 +260,7 @@ export default function EmployeeReportsPage() {
         </div>
 
         {historyError && <div style={errorStyle}>{historyError}</div>}
+        {downloadError && <div style={errorStyle}>{downloadError}</div>}
         {historyLoading && <p style={mutedStyle}>Loading…</p>}
 
         {!historyLoading && history.length === 0 && (
@@ -260,6 +277,7 @@ export default function EmployeeReportsPage() {
                   <th style={thStyle}>Total Hours</th>
                   <th style={thStyle}>Status</th>
                   <th style={thStyle}>Submitted At</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -271,6 +289,15 @@ export default function EmployeeReportsPage() {
                     <td style={tdStyle}><StatusBadge status={r.status} /></td>
                     <td style={{ ...tdStyle, color: "var(--color-text-muted)" }}>
                       {formatDate(r.submittedAt.slice(0, 10))}
+                    </td>
+                    <td style={{ ...tdStyle, textAlign: "right" }}>
+                      <button
+                        className="btn-secondary"
+                        onClick={() => handleDownload(r)}
+                        disabled={downloadingId === r.id}
+                      >
+                        {downloadingId === r.id ? "Downloading…" : "↓ PDF"}
+                      </button>
                     </td>
                   </tr>
                 ))}

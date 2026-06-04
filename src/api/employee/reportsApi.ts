@@ -1,4 +1,5 @@
 import { http } from "../http";
+import { downloadPdf } from "../../utils/downloadPdf";
 import type { MonthlyReportPreview, MyReport } from "./types";
 
 export function getMonthlyPreview(year: number, month: number) {
@@ -16,4 +17,8 @@ export function submitMonthlyReport(year: number, month: number) {
 
 export function getMyReports() {
   return http<MyReport[]>("/api/reports/my");
+}
+
+export function downloadMonthlyReportPdf(reportId: number, year: number, month: number): Promise<void> {
+  return downloadPdf(`/api/reports/${reportId}/pdf`, `monthly-report-${year}-${month}.pdf`);
 }

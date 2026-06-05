@@ -5,10 +5,18 @@ interface AuthContextValue {
   isAuthenticated: boolean;
   isLoading: boolean;
   username: string;
+  displayName: string;
   roles: string[];
   token: string | undefined;
   login: () => void;
   logout: () => void;
+}
+
+function formatDisplayName(raw: string): string {
+  return raw
+    .split(/[._-]+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -49,6 +57,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated,
         isLoading,
         username: keycloak.tokenParsed?.preferred_username ?? "",
+        displayName: (() => {
+          const tp = keycloak.tokenParsed;
+          const given = tp?.given_name as string | undefined;
+          const family = tp?.family_name as string | undefined;
+          const preferred = tp?.preferred_username ?? "";
+          return given && family ? `${given} ${family}` : formatDisplayName(preferred);
+        })(),
         roles: (keycloak.realmAccess?.roles ?? []).map((r) => r.toLowerCase()),
         token: keycloak.token,
         login: () => keycloak.login(),

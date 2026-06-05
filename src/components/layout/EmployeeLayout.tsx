@@ -10,7 +10,7 @@ const NAV_ITEMS = [
 ] as const;
 
 export default function EmployeeLayout() {
-  const { username, logout } = useAuth();
+  const { displayName, logout } = useAuth();
 
   return (
     <div className="app-shell">
@@ -41,8 +41,8 @@ export default function EmployeeLayout() {
 
         {/* Footer */}
         <div className="sidebar-footer">
-          {username && (
-            <div className="sidebar-user">{username}</div>
+          {displayName && (
+            <div className="sidebar-user">{displayName}</div>
           )}
           <button className="sidebar-logout" onClick={logout}>
             <span className="sidebar-link-icon">↩</span>

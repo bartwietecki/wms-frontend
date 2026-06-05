@@ -260,7 +260,7 @@ const labelStyle: CSSProperties = {
 const bottomRowStyle: CSSProperties = {
   display: "flex",
   gap: "var(--space-4)",
-  alignItems: "stretch",
+  alignItems: "flex-start",
 };
 
 const recentCardStyle: CSSProperties = {

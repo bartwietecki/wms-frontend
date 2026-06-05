@@ -7,6 +7,7 @@ import EmptyState from "../../components/ui/EmptyState";
 interface EmployeeTableProps {
   employees: Employee[];
   loading: boolean;
+  hasError?: boolean;
   totalElements: number;
   page: number;
   totalPages: number;
@@ -18,6 +19,7 @@ interface EmployeeTableProps {
 export default function EmployeeTable({
   employees,
   loading,
+  hasError = false,
   totalElements,
   page,
   totalPages,
@@ -38,7 +40,7 @@ export default function EmployeeTable({
 
       {loading && <p style={mutedTextStyle}>Loading employees…</p>}
 
-      {!loading && employees.length === 0 && (
+      {!loading && !hasError && employees.length === 0 && (
         <EmptyState message="No employees found." />
       )}
 

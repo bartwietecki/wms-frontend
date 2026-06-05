@@ -12,7 +12,7 @@ import DeleteWorkLogModal from "../features/employee/DeleteWorkLogModal";
 
 export default function EmployeePage() {
   const [entries, setEntries] = useState<WorkEntry[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -94,6 +94,7 @@ export default function EmployeePage() {
       <WorkLogTable
         entries={entries}
         loading={loading}
+        hasError={error !== null}
         from={from}
         to={to}
         onFromChange={setFrom}

@@ -18,7 +18,7 @@ const EMPTY_FILTERS: LeaveRequestFilters = {};
 
 export default function AdminLeaveRequestsPage() {
   const [requests, setRequests] = useState<LeaveRequest[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -194,7 +194,7 @@ export default function AdminLeaveRequestsPage() {
 
         {loading && <p style={mutedTextStyle}>Loading leave requests…</p>}
 
-        {!loading && requests.length === 0 && (
+        {!loading && error === null && requests.length === 0 && (
           <EmptyState message="No leave requests match the current filters." />
         )}
 

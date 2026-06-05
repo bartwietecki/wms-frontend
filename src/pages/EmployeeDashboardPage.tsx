@@ -75,9 +75,9 @@ export default function EmployeeDashboardPage() {
 
           {entriesLoading ? (
             <div style={loadingStyle}>Loading…</div>
-          ) : entries.length === 0 ? (
+          ) : !entriesError && entries.length === 0 ? (
             <EmptyState message="No work entries this month." />
-          ) : (
+          ) : entries.length > 0 ? (
             <div>
               {entries.map((entry, i) => (
                 <div
@@ -93,7 +93,7 @@ export default function EmployeeDashboardPage() {
                 </div>
               ))}
             </div>
-          )}
+          ) : null}
         </Card>
 
         <Card style={actionsCardStyle}>

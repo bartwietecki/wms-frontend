@@ -11,7 +11,7 @@ import DeleteEmployeeModal from "../features/admin/DeleteEmployeeModal";
 
 export default function AdminEmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -100,6 +100,7 @@ export default function AdminEmployeesPage() {
       <EmployeeTable
         employees={visibleEmployees}
         loading={loading}
+        hasError={error !== null}
         totalElements={totalElements}
         page={page}
         totalPages={totalPages}

@@ -263,7 +263,7 @@ export default function EmployeeReportsPage() {
         {downloadError && <div style={errorStyle}>{downloadError}</div>}
         {historyLoading && <p style={mutedStyle}>Loading…</p>}
 
-        {!historyLoading && history.length === 0 && (
+        {!historyLoading && historyError === null && history.length === 0 && (
           <EmptyState message="You have not submitted any monthly reports yet." />
         )}
 

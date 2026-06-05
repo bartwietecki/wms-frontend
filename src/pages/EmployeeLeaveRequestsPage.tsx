@@ -21,7 +21,7 @@ export default function EmployeeLeaveRequestsPage() {
 
   // List state
   const [requests, setRequests] = useState<LeaveRequest[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   async function loadRequests() {
@@ -169,7 +169,7 @@ export default function EmployeeLeaveRequestsPage() {
 
         {loading && <p style={mutedTextStyle}>Loading…</p>}
 
-        {!loading && requests.length === 0 && (
+        {!loading && error === null && requests.length === 0 && (
           <EmptyState message="You have not submitted any leave requests yet." />
         )}
 

@@ -18,7 +18,7 @@ const EMPTY_FILTERS: WorkEntryFilters = {};
 
 export default function AdminReviewPage() {
   const [entries, setEntries] = useState<WorkEntry[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -142,6 +142,7 @@ export default function AdminReviewPage() {
       <WorkEntriesTable
         entries={visibleEntries}
         loading={loading}
+        hasError={error !== null}
         totalElements={totalElements}
         page={page}
         totalPages={totalPages}

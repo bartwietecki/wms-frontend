@@ -86,9 +86,9 @@ export default function AdminDashboardPage() {
 
           {entriesLoading ? (
             <div style={loadingStyle}>Loading…</div>
-          ) : entries.length === 0 ? (
+          ) : !entriesError && entries.length === 0 ? (
             <EmptyState message="No pending entries. All caught up!" />
-          ) : (
+          ) : entries.length > 0 ? (
             <div>
               {entries.map((entry, i) => (
                 <div
@@ -108,7 +108,7 @@ export default function AdminDashboardPage() {
                 </div>
               ))}
             </div>
-          )}
+          ) : null}
         </Card>
 
         <Card style={actionsCardStyle}>

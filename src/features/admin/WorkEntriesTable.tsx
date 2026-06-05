@@ -8,6 +8,7 @@ import EmptyState from "../../components/ui/EmptyState";
 interface WorkEntriesTableProps {
   entries: WorkEntry[];
   loading: boolean;
+  hasError?: boolean;
   totalElements: number;
   page: number;
   totalPages: number;
@@ -22,6 +23,7 @@ interface WorkEntriesTableProps {
 export default function WorkEntriesTable({
   entries,
   loading,
+  hasError = false,
   totalElements,
   page,
   totalPages,
@@ -45,7 +47,7 @@ export default function WorkEntriesTable({
 
       {loading && <p style={mutedTextStyle}>Loading work entries…</p>}
 
-      {!loading && entries.length === 0 && (
+      {!loading && !hasError && entries.length === 0 && (
         <EmptyState message="No work entries match the current filters." />
       )}
 

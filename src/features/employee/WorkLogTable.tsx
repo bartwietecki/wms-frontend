@@ -8,6 +8,7 @@ import EmptyState from "../../components/ui/EmptyState";
 interface WorkLogTableProps {
   entries: WorkEntry[];
   loading: boolean;
+  hasError?: boolean;
   from: string;
   to: string;
   onFromChange: (v: string) => void;
@@ -20,6 +21,7 @@ interface WorkLogTableProps {
 export default function WorkLogTable({
   entries,
   loading,
+  hasError = false,
   from,
   to,
   onFromChange,
@@ -64,7 +66,7 @@ export default function WorkLogTable({
 
       {loading && <p style={mutedTextStyle}>Loading your work logs…</p>}
 
-      {!loading && entries.length === 0 && (
+      {!loading && !hasError && entries.length === 0 && (
         <EmptyState message="No work logs found for the selected period." />
       )}
 

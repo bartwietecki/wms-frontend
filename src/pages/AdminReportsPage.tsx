@@ -35,7 +35,7 @@ const MONTH_OPTIONS = [
 
 export default function AdminReportsPage() {
   const [reports, setReports] = useState<AdminReport[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -270,7 +270,7 @@ export default function AdminReportsPage() {
 
         {loading && <p style={mutedStyle}>Loading reports…</p>}
 
-        {!loading && reports.length === 0 && (
+        {!loading && error === null && reports.length === 0 && (
           <EmptyState message="No reports match the current filters." />
         )}
 

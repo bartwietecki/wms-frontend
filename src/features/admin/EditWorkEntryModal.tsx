@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import type { WorkEntry } from "../../api/admin/types";
 import { updateWorkEntry } from "../../api/admin/workEntriesApi";
 import { formatHours, formatDate } from "../../utils/time";
+import { parseApiError } from "../../utils/apiError";
 
 interface EditWorkEntryModalProps {
   entry: WorkEntry;
@@ -38,7 +39,7 @@ export default function EditWorkEntryModal({ entry, onClose, onSaved }: EditWork
       });
       onSaved();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save changes");
+      setError(parseApiError(err, "Failed to save changes"));
     } finally {
       setSaving(false);
     }

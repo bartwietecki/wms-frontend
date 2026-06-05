@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import { getProfile, updateProfile } from "../api/employee/profileApi";
 import type { EmployeeProfile } from "../api/employee/types";
 import { formatEmploymentType } from "../utils/time";
+import { parseApiError } from "../utils/apiError";
 import PageHeader from "../components/ui/PageHeader";
 import Card from "../components/ui/Card";
 
@@ -21,7 +22,7 @@ export default function EmployeeProfilePage() {
   useEffect(() => {
     getProfile()
       .then(setProfile)
-      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load profile"))
+      .catch((err) => setError(parseApiError(err, "Failed to load profile")))
       .finally(() => setLoading(false));
   }, []);
 
@@ -59,7 +60,7 @@ export default function EmployeeProfilePage() {
       setIsEditing(false);
       setSaveSuccess(true);
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Failed to save profile");
+      setFormError(parseApiError(err, "Failed to save profile"));
     } finally {
       setSaving(false);
     }

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import type { CSSProperties } from "react";
 import type { Employee } from "../../api/admin/types";
 import { deleteEmployee } from "../../api/admin/employeesApi";
+import { parseApiError } from "../../utils/apiError";
 
 interface DeleteEmployeeModalProps {
   employee: Employee;
@@ -28,7 +29,7 @@ export default function DeleteEmployeeModal({ employee, onClose, onDeleted }: De
       await deleteEmployee(employee.id);
       onDeleted();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete employee");
+      setError(parseApiError(err, "Failed to delete employee"));
     } finally {
       setDeleting(false);
     }

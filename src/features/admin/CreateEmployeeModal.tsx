@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import { createEmployee } from "../../api/admin/employeesApi";
 import type { CreateEmployeeRequest } from "../../api/admin/employeesApi";
 import EmployeeFormFields from "./EmployeeFormFields";
+import { parseApiError } from "../../utils/apiError";
 
 interface CreateEmployeeModalProps {
   onClose: () => void;
@@ -41,7 +42,7 @@ export default function CreateEmployeeModal({ onClose, onCreated }: CreateEmploy
       await createEmployee(form);
       onCreated();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create employee");
+      setError(parseApiError(err, "Failed to create employee"));
     } finally {
       setSaving(false);
     }

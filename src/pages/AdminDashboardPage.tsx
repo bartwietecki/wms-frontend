@@ -5,6 +5,7 @@ import { getAdminDashboard } from "../api/admin/dashboardApi";
 import { getWorkEntries } from "../api/admin/workEntriesApi";
 import type { AdminDashboard, WorkEntry } from "../api/admin/types";
 import { formatHours, formatDate } from "../utils/time";
+import { parseApiError } from "../utils/apiError";
 import PageHeader from "../components/ui/PageHeader";
 import Card from "../components/ui/Card";
 import StatusBadge from "../components/ui/StatusBadge";
@@ -23,7 +24,7 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     getAdminDashboard()
       .then(setData)
-      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load dashboard"))
+      .catch((err) => setError(parseApiError(err, "Failed to load dashboard")))
       .finally(() => setLoading(false));
 
     getWorkEntries({ status: "PENDING" }, 0, PENDING_LIMIT)
@@ -31,7 +32,7 @@ export default function AdminDashboardPage() {
         const sorted = [...page.content].sort((a, b) => b.workDate.localeCompare(a.workDate));
         setEntries(sorted);
       })
-      .catch((err) => setEntriesError(err instanceof Error ? err.message : "Failed to load entries"))
+      .catch((err) => setEntriesError(parseApiError(err, "Failed to load entries")))
       .finally(() => setEntriesLoading(false));
   }, []);
 

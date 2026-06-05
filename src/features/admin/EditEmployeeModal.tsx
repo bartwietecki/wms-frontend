@@ -4,6 +4,7 @@ import { updateEmployee } from "../../api/admin/employeesApi";
 import type { UpdateEmployeeRequest } from "../../api/admin/employeesApi";
 import type { Employee } from "../../api/admin/types";
 import EmployeeFormFields from "./EmployeeFormFields";
+import { parseApiError } from "../../utils/apiError";
 
 interface EditEmployeeModalProps {
   employee: Employee;
@@ -41,7 +42,7 @@ export default function EditEmployeeModal({ employee, onClose, onSaved }: EditEm
       await updateEmployee(employee.id, form);
       onSaved();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save changes");
+      setError(parseApiError(err, "Failed to save changes"));
     } finally {
       setSaving(false);
     }

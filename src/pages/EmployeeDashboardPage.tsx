@@ -5,6 +5,7 @@ import { getDashboard } from "../api/employee/dashboardApi";
 import { getMyWorkEntries } from "../api/employee/workEntriesApi";
 import type { EmployeeDashboard, WorkEntry } from "../api/employee/types";
 import { getToday, getMonthStart, formatHours, formatDate } from "../utils/time";
+import { parseApiError } from "../utils/apiError";
 import PageHeader from "../components/ui/PageHeader";
 import Card from "../components/ui/Card";
 import StatusBadge from "../components/ui/StatusBadge";
@@ -24,7 +25,7 @@ export default function EmployeeDashboardPage() {
   useEffect(() => {
     getDashboard()
       .then(setData)
-      .catch((err) => setDashError(err instanceof Error ? err.message : "Failed to load dashboard"))
+      .catch((err) => setDashError(parseApiError(err, "Failed to load dashboard")))
       .finally(() => setDashLoading(false));
 
     getMyWorkEntries(getMonthStart(), getToday())
@@ -32,7 +33,7 @@ export default function EmployeeDashboardPage() {
         const sorted = [...all].sort((a, b) => b.workDate.localeCompare(a.workDate));
         setEntries(sorted.slice(0, RECENT_LIMIT));
       })
-      .catch((err) => setEntriesError(err instanceof Error ? err.message : "Failed to load entries"))
+      .catch((err) => setEntriesError(parseApiError(err, "Failed to load entries")))
       .finally(() => setEntriesLoading(false));
   }, []);
 

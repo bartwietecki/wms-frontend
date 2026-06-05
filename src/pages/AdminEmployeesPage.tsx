@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { CSSProperties } from "react";
 import { getEmployees } from "../api/admin/employeesApi";
 import type { Employee } from "../api/admin/types";
+import { parseApiError } from "../utils/apiError";
 import PageHeader from "../components/ui/PageHeader";
 import EmployeeTable from "../features/admin/EmployeeTable";
 import CreateEmployeeModal from "../features/admin/CreateEmployeeModal";
@@ -34,7 +35,7 @@ export default function AdminEmployeesPage() {
       setTotalElements(data.totalElements);
       setPage(data.number);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load employees");
+      setError(parseApiError(err, "Failed to load employees"));
     } finally {
       setLoading(false);
     }

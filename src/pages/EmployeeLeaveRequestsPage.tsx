@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { CSSProperties } from "react";
 import { getMyLeaveRequests, createLeaveRequest } from "../api/employee/leaveRequestsApi";
 import { formatDate } from "../utils/time";
+import { parseApiError } from "../utils/apiError";
 import type { LeaveRequest, LeaveRequestType } from "../api/employee/types";
 import PageHeader from "../components/ui/PageHeader";
 import Card from "../components/ui/Card";
@@ -30,7 +31,7 @@ export default function EmployeeLeaveRequestsPage() {
       const data = await getMyLeaveRequests();
       setRequests(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load leave requests");
+      setError(parseApiError(err, "Failed to load leave requests"));
     } finally {
       setLoading(false);
     }
@@ -71,7 +72,7 @@ export default function EmployeeLeaveRequestsPage() {
       setSubmitSuccess(true);
       await loadRequests();
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Failed to submit leave request");
+      setSubmitError(parseApiError(err, "Failed to submit leave request"));
     } finally {
       setSubmitting(false);
     }

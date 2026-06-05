@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import type { WorkEntry } from "../../api/admin/types";
 import { deleteWorkEntry } from "../../api/admin/workEntriesApi";
 import { formatDate } from "../../utils/time";
+import { parseApiError } from "../../utils/apiError";
 
 interface DeleteWorkEntryModalProps {
   entry: WorkEntry;
@@ -29,7 +30,7 @@ export default function DeleteWorkEntryModal({ entry, onClose, onDeleted }: Dele
       await deleteWorkEntry(entry.id);
       onDeleted();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete entry");
+      setError(parseApiError(err, "Failed to delete entry"));
     } finally {
       setDeleting(false);
     }

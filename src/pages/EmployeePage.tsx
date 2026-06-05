@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import { createWorkEntry, getMyWorkEntries } from "../api/employee/workEntriesApi";
 import type { WorkEntry } from "../api/employee/types";
 import { getToday, getMonthStart } from "../utils/time";
+import { parseApiError } from "../utils/apiError";
 import PageHeader from "../components/ui/PageHeader";
 import WorkLogForm from "../features/employee/WorkLogForm";
 import WorkLogTable from "../features/employee/WorkLogTable";
@@ -32,7 +33,7 @@ export default function EmployeePage() {
       const data = await getMyWorkEntries(from, to);
       setEntries(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load work logs");
+      setError(parseApiError(err, "Failed to load work logs"));
     } finally {
       setLoading(false);
     }
@@ -57,7 +58,7 @@ export default function EmployeePage() {
       setSubmitSuccess(true);
       await loadEntries();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create work log");
+      setError(parseApiError(err, "Failed to create work log"));
     } finally {
       setSubmitting(false);
     }

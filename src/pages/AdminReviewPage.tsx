@@ -7,6 +7,7 @@ import {
 } from "../api/admin/workEntriesApi";
 import type { WorkEntryFilters } from "../api/admin/workEntriesApi";
 import type { WorkEntry } from "../api/admin/types";
+import { parseApiError } from "../utils/apiError";
 import PageHeader from "../components/ui/PageHeader";
 import WorkEntryFilterBar from "../features/admin/WorkEntryFilterBar";
 import WorkEntriesTable from "../features/admin/WorkEntriesTable";
@@ -42,7 +43,7 @@ export default function AdminReviewPage() {
       setTotalElements(data.totalElements);
       setPage(data.number);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load work entries");
+      setError(parseApiError(err, "Failed to load work entries"));
     } finally {
       setLoading(false);
     }
@@ -79,7 +80,7 @@ export default function AdminReviewPage() {
       await approveWorkEntry(id);
       await loadEntries(filters, page);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to approve entry");
+      setError(parseApiError(err, "Failed to approve entry"));
     } finally {
       setActioningId(null);
     }
@@ -92,7 +93,7 @@ export default function AdminReviewPage() {
       await rejectWorkEntry(id);
       await loadEntries(filters, page);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to reject entry");
+      setError(parseApiError(err, "Failed to reject entry"));
     } finally {
       setActioningId(null);
     }

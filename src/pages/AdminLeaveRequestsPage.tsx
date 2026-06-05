@@ -6,6 +6,7 @@ import {
   rejectLeaveRequest,
 } from "../api/admin/leaveRequestsApi";
 import { formatDate } from "../utils/time";
+import { parseApiError } from "../utils/apiError";
 import type { LeaveRequestFilters } from "../api/admin/leaveRequestsApi";
 import type { LeaveRequest } from "../api/admin/types";
 import PageHeader from "../components/ui/PageHeader";
@@ -41,7 +42,7 @@ export default function AdminLeaveRequestsPage() {
       setTotalElements(data.totalElements);
       setPage(data.number);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load leave requests");
+      setError(parseApiError(err, "Failed to load leave requests"));
     } finally {
       setLoading(false);
     }
@@ -78,7 +79,7 @@ export default function AdminLeaveRequestsPage() {
       setActionSuccess("Leave request approved.");
       await loadRequests(filters, page);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to approve leave request");
+      setError(parseApiError(err, "Failed to approve leave request"));
     } finally {
       setActioningId(null);
     }
@@ -92,7 +93,7 @@ export default function AdminLeaveRequestsPage() {
       setActionSuccess("Leave request rejected.");
       await loadRequests(filters, page);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to reject leave request");
+      setError(parseApiError(err, "Failed to reject leave request"));
     } finally {
       setActioningId(null);
     }

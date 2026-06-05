@@ -17,7 +17,7 @@ export default function EmployeeLayout() {
       <aside className="sidebar">
         {/* Brand */}
         <Link to="/employee/dashboard" className="sidebar-brand">
-          <div className="sidebar-brand-mark">▦</div>
+          <div className="sidebar-brand-mark">⚙️</div>
           <div>
             <div className="sidebar-brand-text">WMS</div>
             <div className="sidebar-brand-role">Employee Panel</div>

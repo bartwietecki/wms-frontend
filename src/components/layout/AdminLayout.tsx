@@ -17,7 +17,7 @@ export default function AdminLayout() {
       <aside className="sidebar">
         {/* Brand */}
         <Link to="/admin/dashboard" className="sidebar-brand">
-          <div className="sidebar-brand-mark">▦</div>
+          <div className="sidebar-brand-mark">⚙️</div>
           <div>
             <div className="sidebar-brand-text">WMS</div>
             <div className="sidebar-brand-role">Admin Panel</div>

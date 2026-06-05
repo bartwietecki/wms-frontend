@@ -11,7 +11,7 @@ export default function EmployeeFormFields({ form, onChange, autoFocusFirst }: E
   return (
     <>
       <div style={fieldStyle}>
-        <label style={labelStyle}>First name</label>
+        <label style={labelStyle}>First Name</label>
         <input
           className="form-input"
           type="text"
@@ -23,7 +23,7 @@ export default function EmployeeFormFields({ form, onChange, autoFocusFirst }: E
       </div>
 
       <div style={fieldStyle}>
-        <label style={labelStyle}>Last name</label>
+        <label style={labelStyle}>Last Name</label>
         <input
           className="form-input"
           type="text"

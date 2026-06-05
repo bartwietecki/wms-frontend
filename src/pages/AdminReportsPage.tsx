@@ -9,7 +9,7 @@ import {
 } from "../api/admin/reportsApi";
 import type { ReportFilters } from "../api/admin/reportsApi";
 import type { AdminReport, AdminReportDetail } from "../api/admin/types";
-import { formatDate, formatMonthName } from "../utils/time";
+import { formatDate, formatMonthName, formatHours } from "../utils/time";
 import { parseApiError } from "../utils/apiError";
 import PageHeader from "../components/ui/PageHeader";
 import Card from "../components/ui/Card";
@@ -412,7 +412,10 @@ export default function AdminReportsPage() {
                   {detail.entries.map((entry) => (
                     <tr key={entry.id} className="table-row-hover">
                       <td style={tdStyle}>{formatDate(entry.workDate)}</td>
-                      <td style={tdStyle}>{entry.minutes}</td>
+                      <td style={tdStyle}>
+                        <span style={durationStyle}>{entry.minutes} min</span>
+                        <span style={durationHintStyle}>{formatHours(entry.minutes)}</span>
+                      </td>
                       <td style={{ ...tdStyle, color: "var(--color-text-muted)" }}>
                         {entry.description || <span style={{ color: "var(--color-text-subtle)" }}>—</span>}
                       </td>
@@ -654,6 +657,19 @@ const rejectFormStyle: CSSProperties = {
 
 const requiredStyle: CSSProperties = {
   color: "var(--color-danger-text)",
+};
+
+const durationStyle: CSSProperties = {
+  display: "block",
+  fontWeight: 500,
+  color: "var(--color-text)",
+};
+
+const durationHintStyle: CSSProperties = {
+  display: "block",
+  fontSize: "var(--font-size-xs)",
+  color: "var(--color-text-subtle)",
+  marginTop: 1,
 };
 
 const errorStyle: CSSProperties = {

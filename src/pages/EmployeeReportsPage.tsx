@@ -7,7 +7,7 @@ import {
   downloadMonthlyReportPdf,
 } from "../api/employee/reportsApi";
 import type { MonthlyReportPreview, MyReport } from "../api/employee/types";
-import { formatDate, formatMonthName } from "../utils/time";
+import { formatDate, formatMonthName, formatHours } from "../utils/time";
 import { parseApiError } from "../utils/apiError";
 import PageHeader from "../components/ui/PageHeader";
 import Card from "../components/ui/Card";
@@ -195,10 +195,6 @@ export default function EmployeeReportsPage() {
                 <span style={summaryValueStyle}>{preview.totalHours.toFixed(1)} h</span>
               </div>
               <div style={summaryItemStyle}>
-                <span style={summaryLabelStyle}>Total Minutes</span>
-                <span style={summaryValueStyle}>{preview.totalMinutes}</span>
-              </div>
-              <div style={summaryItemStyle}>
                 <span style={summaryLabelStyle}>Entries</span>
                 <span style={summaryValueStyle}>{preview.entriesCount}</span>
               </div>
@@ -225,7 +221,10 @@ export default function EmployeeReportsPage() {
                     {preview.entries.map((entry) => (
                       <tr key={entry.id} className="table-row-hover">
                         <td style={tdStyle}>{formatDate(entry.workDate)}</td>
-                        <td style={tdStyle}>{entry.minutes}</td>
+                        <td style={tdStyle}>
+                          <span style={durationStyle}>{entry.minutes} min</span>
+                          <span style={durationHintStyle}>{formatHours(entry.minutes)}</span>
+                        </td>
                         <td style={{ ...tdStyle, color: "var(--color-text-muted)" }}>
                           {entry.description || <span style={{ color: "var(--color-text-subtle)" }}>—</span>}
                         </td>
@@ -416,6 +415,19 @@ const errorStyle: CSSProperties = {
   marginBottom: "var(--space-5)",
   fontSize: "var(--font-size-sm)",
   fontWeight: 500,
+};
+
+const durationStyle: CSSProperties = {
+  display: "block",
+  fontWeight: 500,
+  color: "var(--color-text)",
+};
+
+const durationHintStyle: CSSProperties = {
+  display: "block",
+  fontSize: "var(--font-size-xs)",
+  color: "var(--color-text-subtle)",
+  marginTop: 1,
 };
 
 const successStyle: CSSProperties = {

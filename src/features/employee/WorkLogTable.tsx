@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import type { WorkEntry } from "../../api/employee/types";
-import { formatHours } from "../../utils/time";
+import { formatHours, formatDate } from "../../utils/time";
 import Card from "../../components/ui/Card";
 import StatusBadge from "../../components/ui/StatusBadge";
 import EmptyState from "../../components/ui/EmptyState";
@@ -83,7 +83,7 @@ export default function WorkLogTable({
             <tbody>
               {entries.map((entry) => (
                 <tr key={entry.id} className="table-row-hover">
-                  <td style={tdStyle}>{entry.workDate}</td>
+                  <td style={tdStyle}>{formatDate(entry.workDate)}</td>
                   <td style={tdStyle}>
                     <span style={durationStyle}>{entry.minutes} min</span>
                     <span style={durationHintStyle}>{formatHours(entry.minutes)}</span>

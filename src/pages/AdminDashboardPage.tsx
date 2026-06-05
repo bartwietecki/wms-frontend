@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { getAdminDashboard } from "../api/admin/dashboardApi";
 import { getWorkEntries } from "../api/admin/workEntriesApi";
 import type { AdminDashboard, WorkEntry } from "../api/admin/types";
-import { formatHours } from "../utils/time";
+import { formatHours, formatDate } from "../utils/time";
 import PageHeader from "../components/ui/PageHeader";
 import Card from "../components/ui/Card";
 import StatusBadge from "../components/ui/StatusBadge";
@@ -98,7 +98,7 @@ export default function AdminDashboardPage() {
                   }}
                 >
                   <div style={entryNameStyle}>{entry.employeeName}</div>
-                  <div style={entryDateStyle}>{entry.workDate}</div>
+                  <div style={entryDateStyle}>{formatDate(entry.workDate)}</div>
                   <div style={entryHoursStyle}>{formatHours(entry.minutes)}</div>
                   <div style={entryDescStyle}>
                     {entry.description || <span style={{ color: "var(--color-text-subtle)" }}>—</span>}

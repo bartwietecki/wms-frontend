@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import type { CSSProperties } from "react";
 import type { WorkEntry } from "../../api/employee/types";
 import { deleteMyWorkEntry, resolveWorkEntryError } from "../../api/employee/workEntriesApi";
-import { formatHours } from "../../utils/time";
+import { formatHours, formatDate } from "../../utils/time";
 
 interface DeleteWorkLogModalProps {
   entry: WorkEntry;
@@ -47,7 +47,7 @@ export default function DeleteWorkLogModal({ entry, onClose, onDeleted }: Delete
           </p>
           <div style={previewStyle}>
             <span style={previewLabelStyle}>Date</span>
-            <span>{entry.workDate}</span>
+            <span>{formatDate(entry.workDate)}</span>
             <span style={previewLabelStyle}>Duration</span>
             <span>{entry.minutes} min ({formatHours(entry.minutes)})</span>
             {entry.description?.trim() && (

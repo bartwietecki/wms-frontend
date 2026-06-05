@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import type { Employee } from "../../api/admin/types";
+import { formatEmploymentType } from "../../utils/time";
 import Card from "../../components/ui/Card";
 import EmptyState from "../../components/ui/EmptyState";
 
@@ -63,7 +64,7 @@ export default function EmployeeTable({
                     </td>
                     <td style={{ ...tdStyle, color: "var(--color-text-muted)" }}>{emp.email}</td>
                     <td style={tdStyle}>{emp.position}</td>
-                    <td style={tdStyle}>{emp.employmentType}</td>
+                    <td style={tdStyle}>{formatEmploymentType(emp.employmentType)}</td>
                     <td style={tdStyle}>
                       <span style={emp.active ? activeBadgeStyle : inactiveBadgeStyle}>
                         {emp.active ? "Active" : "Inactive"}

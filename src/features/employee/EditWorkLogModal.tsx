@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import type { CSSProperties } from "react";
 import type { WorkEntry } from "../../api/employee/types";
 import { updateMyWorkEntry, resolveWorkEntryError } from "../../api/employee/workEntriesApi";
-import { formatHours } from "../../utils/time";
+import { formatHours, formatDate } from "../../utils/time";
 
 interface EditWorkLogModalProps {
   entry: WorkEntry;
@@ -50,7 +50,7 @@ export default function EditWorkLogModal({ entry, onClose, onSaved }: EditWorkLo
         <div style={headerStyle}>
           <div>
             <h2 id="edit-log-title" style={titleStyle}>Edit Work Log</h2>
-            <p style={subtitleStyle}>{entry.workDate}</p>
+            <p style={subtitleStyle}>{formatDate(entry.workDate)}</p>
           </div>
           <button style={closeBtnStyle} onClick={onClose} aria-label="Close">✕</button>
         </div>

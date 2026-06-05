@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { CSSProperties } from "react";
 import { getProfile, updateProfile } from "../api/employee/profileApi";
 import type { EmployeeProfile } from "../api/employee/types";
+import { formatEmploymentType } from "../utils/time";
 import PageHeader from "../components/ui/PageHeader";
 import Card from "../components/ui/Card";
 
@@ -226,13 +227,6 @@ function Field({ label, value }: { label: string; value: React.ReactNode }) {
       <div style={fieldValueStyle}>{value}</div>
     </div>
   );
-}
-
-function formatEmploymentType(raw: string): string {
-  return raw
-    .split("_")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-    .join(" ");
 }
 
 // Styles

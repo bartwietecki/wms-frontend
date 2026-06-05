@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { getDashboard } from "../api/employee/dashboardApi";
 import { getMyWorkEntries } from "../api/employee/workEntriesApi";
 import type { EmployeeDashboard, WorkEntry } from "../api/employee/types";
-import { getToday, getMonthStart, formatHours } from "../utils/time";
+import { getToday, getMonthStart, formatHours, formatDate } from "../utils/time";
 import PageHeader from "../components/ui/PageHeader";
 import Card from "../components/ui/Card";
 import StatusBadge from "../components/ui/StatusBadge";
@@ -83,7 +83,7 @@ export default function EmployeeDashboardPage() {
                   key={entry.id}
                   style={{ ...entryRowStyle, borderTop: i === 0 ? "none" : "1px solid var(--color-border)" }}
                 >
-                  <div style={entryDateStyle}>{entry.workDate}</div>
+                  <div style={entryDateStyle}>{formatDate(entry.workDate)}</div>
                   <div style={entryHoursStyle}>{formatHours(entry.minutes)}</div>
                   <div style={entryDescStyle}>
                     {entry.description || <span style={{ color: "var(--color-text-subtle)" }}>—</span>}

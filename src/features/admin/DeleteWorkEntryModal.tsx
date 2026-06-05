@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import type { CSSProperties } from "react";
 import type { WorkEntry } from "../../api/admin/types";
 import { deleteWorkEntry } from "../../api/admin/workEntriesApi";
+import { formatDate } from "../../utils/time";
 
 interface DeleteWorkEntryModalProps {
   entry: WorkEntry;
@@ -50,7 +51,7 @@ export default function DeleteWorkEntryModal({ entry, onClose, onDeleted }: Dele
             <span style={previewLabelStyle}>Employee</span>
             <span>{entry.employeeName}</span>
             <span style={previewLabelStyle}>Date</span>
-            <span>{entry.workDate}</span>
+            <span>{formatDate(entry.workDate)}</span>
             <span style={previewLabelStyle}>Duration</span>
             <span>{entry.minutes} min</span>
           </div>

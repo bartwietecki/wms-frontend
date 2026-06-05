@@ -26,6 +26,12 @@ export default function EmployeeProfilePage() {
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    if (!saveSuccess) return;
+    const t = setTimeout(() => setSaveSuccess(false), 4000);
+    return () => clearTimeout(t);
+  }, [saveSuccess]);
+
   function handleEdit() {
     if (!profile) return;
     setFirstName(profile.firstName);

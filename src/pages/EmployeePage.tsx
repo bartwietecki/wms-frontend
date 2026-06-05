@@ -41,6 +41,12 @@ export default function EmployeePage() {
 
   useEffect(() => { loadEntries(); }, []);
 
+  useEffect(() => {
+    if (!submitSuccess) return;
+    const t = setTimeout(() => setSubmitSuccess(false), 4000);
+    return () => clearTimeout(t);
+  }, [submitSuccess]);
+
   async function handleCreateSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     try {

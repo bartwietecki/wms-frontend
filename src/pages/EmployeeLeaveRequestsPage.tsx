@@ -39,6 +39,12 @@ export default function EmployeeLeaveRequestsPage() {
 
   useEffect(() => { loadRequests(); }, []);
 
+  useEffect(() => {
+    if (!submitSuccess) return;
+    const t = setTimeout(() => setSubmitSuccess(false), 4000);
+    return () => clearTimeout(t);
+  }, [submitSuccess]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 

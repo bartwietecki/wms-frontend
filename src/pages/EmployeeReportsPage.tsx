@@ -70,6 +70,12 @@ export default function EmployeeReportsPage() {
 
   useEffect(() => { loadHistory(); }, []);
 
+  useEffect(() => {
+    if (!submitSuccess) return;
+    const t = setTimeout(() => setSubmitSuccess(null), 4000);
+    return () => clearTimeout(t);
+  }, [submitSuccess]);
+
   async function handlePreview() {
     setPreviewLoading(true);
     setPreviewError(null);

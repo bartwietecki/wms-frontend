@@ -78,6 +78,12 @@ export default function AdminReportsPage() {
 
   useEffect(() => { loadReports(EMPTY_FILTERS, 0); }, []);
 
+  useEffect(() => {
+    if (!actionSuccess) return;
+    const t = setTimeout(() => setActionSuccess(null), 4000);
+    return () => clearTimeout(t);
+  }, [actionSuccess]);
+
   function handleApplyFilters() {
     setValidationError(null);
     setFilters(pendingFilters);

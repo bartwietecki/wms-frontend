@@ -50,6 +50,12 @@ export default function AdminLeaveRequestsPage() {
 
   useEffect(() => { loadRequests(EMPTY_FILTERS, 0); }, []);
 
+  useEffect(() => {
+    if (!actionSuccess) return;
+    const t = setTimeout(() => setActionSuccess(null), 4000);
+    return () => clearTimeout(t);
+  }, [actionSuccess]);
+
   function handleApplyFilters() {
     if (pendingFilters.from && pendingFilters.to && pendingFilters.from > pendingFilters.to) {
       setValidationError("'From' date cannot be after 'To' date.");

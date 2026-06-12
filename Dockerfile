@@ -9,9 +9,11 @@ COPY . .
 
 # nginx proxies /api → wms-backend; empty base URL makes all API calls relative
 ENV VITE_API_BASE_URL=""
-ARG VITE_KEYCLOAK_URL=http://localhost:9090
+ARG VITE_KEYCLOAK_URL
 ARG VITE_KEYCLOAK_REALM=wms
 ARG VITE_KEYCLOAK_CLIENT_ID=wms-client
+# Fail loudly if the required Keycloak URL was not provided at build time
+RUN test -n "$VITE_KEYCLOAK_URL" || (echo "ERROR: --build-arg VITE_KEYCLOAK_URL is required" && exit 1)
 ENV VITE_KEYCLOAK_URL=${VITE_KEYCLOAK_URL}
 ENV VITE_KEYCLOAK_REALM=${VITE_KEYCLOAK_REALM}
 ENV VITE_KEYCLOAK_CLIENT_ID=${VITE_KEYCLOAK_CLIENT_ID}

@@ -42,22 +42,11 @@ export async function http<T>(path: string, options: HttpOptions = {}): Promise<
     url += "?" + new URLSearchParams(queryParams).toString();
   }
 
-  if (import.meta.env.DEV) {
-    console.debug("[http]", method, url, {
-      headerKeys: Object.keys(requestHeaders),
-      hasAuth: "Authorization" in requestHeaders,
-    });
-  }
-
   let response: Response;
   try {
     response = await fetch(url, { method, headers: requestHeaders, body });
   } catch (err) {
     throw new Error(`[http] Network error for ${method} ${url}: ${String(err)}`);
-  }
-
-  if (import.meta.env.DEV) {
-    console.debug("[http] response", response.status, method, url);
   }
 
   if (!response.ok) {

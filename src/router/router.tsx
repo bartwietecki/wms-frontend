@@ -36,7 +36,7 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    // Admin area (requires admin role()
+    // Admin area (requires admin role)
     element: <RequireRole role="admin" />,
     children: [
       {

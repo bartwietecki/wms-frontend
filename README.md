@@ -1,73 +1,93 @@
-# React + TypeScript + Vite
+# WMS Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React + TypeScript single-page application for the Workforce Management
+System (WMS), built with Vite. It provides role-based dashboards for
+employees and admins, talks to a Spring Boot REST API, and is secured with
+Keycloak (OIDC).
 
-Currently, two official plugins are available:
+## Related Repositories
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Backend** -> [wms-backend](https://github.com/bartwietecki/wms-backend)
+  (Spring Boot REST API)
 
-## React Compiler
+## Project Overview
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+WMS is a small internal tool for tracking how employees spend their working
+time and for managing time off.
 
-## Expanding the ESLint configuration
+- **Employee Panel** - log work entries, request leave, track monthly hours,
+  and submit monthly reports.
+- **Admin Panel** - manage the employee directory and review/approve work
+  entries, leave requests and monthly reports.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Access to each panel is controlled by the roles in the user's Keycloak JWT.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Architecture at a Glance
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+Employee / Admin
+    │
+    ▼
+React Frontend             - SPA built with Vite, role-based routing
+    │                         (Employee Panel / Admin Panel)
+    │
+    ├── Keycloak (OIDC)      - login & token issuance
+    │
+    │  Authorization: Bearer <JWT>
+    ▼
+Spring Boot Backend          - REST API
+    │
+    ▼
+PostgreSQL
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Features
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Employee
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- Log, edit and delete work entries; track monthly hours on a dashboard.
+- Submit leave requests (holiday/sick) and view their status.
+- Preview, submit and download monthly work reports as PDF.
+- View and edit personal profile.
+
+### Admin
+
+- Review and approve/reject work entries, leave requests and monthly reports.
+- Manage the employee directory (create, edit, delete, search).
+- View dashboard metrics (pending approvals, active employees, employees on leave).
+
+## Technology Stack
+
+| Category         | Technology |
+|------------------|------------|
+| Language         | TypeScript 5.9 (strict mode) |
+| Framework        | React 19, React Router 7 |
+| Build tool       | Vite 7 |
+| Authentication   | Keycloak (`keycloak-js`, OIDC + PKCE) |
+| Styling          | Plain CSS with design tokens, no CSS framework |
+| Containerization | Docker, nginx |
+
+## Design Decisions
+
+A few notable choices made in this project:
+
+- **Keycloak + OIDC** - login and session handling are delegated entirely to
+  Keycloak; the frontend never sees a password and only deals with tokens.
+- **Authorization Code flow with PKCE** - the recommended OIDC flow for
+  public clients such as a browser SPA, configured via `keycloak-js`.
+- **Route guards (`RequireRole`)** - each panel (`/admin/*`, `/employee/*`) is
+  wrapped in a guard that checks the roles in the JWT and redirects users to
+  the panel they're allowed to see.
+- **Typed API layer** - all backend calls go through small typed functions
+  per domain (`src/api/admin`, `src/api/employee`) built on a single shared
+  `http` client, instead of calling `fetch` directly from components.
+- **Shared UI components** - cards, status badges, page headers and empty
+  states are reused across both panels for a consistent look.
+
+## Running with Docker
+
+The frontend can be built as a standalone Docker image using the included
+`Dockerfile`.
+
+For the full stack (frontend, backend, Keycloak, PostgreSQL) via Docker
+Compose, see [wms-backend](https://github.com/bartwietecki/wms-backend).

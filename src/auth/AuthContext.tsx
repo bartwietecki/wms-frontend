@@ -1,16 +1,6 @@
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import keycloak from "./keycloak";
-
-interface AuthContextValue {
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  username: string;
-  displayName: string;
-  roles: string[];
-  token: string | undefined;
-  login: () => void;
-  logout: () => void;
-}
+import { AuthContext } from "./auth-context";
 
 function formatDisplayName(raw: string): string {
   return raw
@@ -18,8 +8,6 @@ function formatDisplayName(raw: string): string {
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
     .join(" ");
 }
-
-const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -73,10 +61,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth(): AuthContextValue {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
-  return ctx;
 }

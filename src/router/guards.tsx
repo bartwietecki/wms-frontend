@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext";
+import { useAuth } from "../auth/useAuth";
 import keycloak from "../auth/keycloak";
 
 type UserRole = "employee" | "admin";

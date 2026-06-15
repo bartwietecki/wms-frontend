@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { CSSProperties } from "react";
 import { createWorkEntry, getMyWorkEntries } from "../api/employee/workEntriesApi";
 import type { WorkEntry } from "../api/employee/types";
@@ -26,7 +26,7 @@ export default function EmployeePage() {
   const [minutes, setMinutes] = useState("480");
   const [description, setDescription] = useState("");
 
-  async function loadEntries() {
+  const loadEntries = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -37,9 +37,9 @@ export default function EmployeePage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [from, to]);
 
-  useEffect(() => { loadEntries(); }, []);
+  useEffect(() => { loadEntries(); }, [loadEntries]);
 
   useEffect(() => {
     if (!submitSuccess) return;
